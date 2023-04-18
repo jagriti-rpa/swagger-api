@@ -205,23 +205,6 @@ paths:
         500:
           description: Internal Server Error
 
-#Cokies
-  # /ping:
-  #   get:
-  #     summary: Checks if the server is alive
-  #     parameters:
-  #       - in: cookie
-  #         name: debug
-  #         schema:
-  #           type: integer
-  #           enum: [0, 1]
-  #           default: 0
-  #       - in: cookie
-  #         name: csrftoken
-  #         schema:
-  #           type: string
-
-
 components:
   schemas:
     User:
