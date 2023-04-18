@@ -4,14 +4,15 @@ info:
   version: 2.3.0
   title: Pet API
 servers:
-  - url: https://localhost:8080
+  - url: https://www.skemify.co:443
     description: Server API
 paths:
-  /employees/:
+  /employee/:
     get:
       summary: Returns how many documents exists with an specific query
       tags:
-        - Employee
+        - count
+        - Pet
       operationId: countPet
       parameters:
         - name: createdAt
@@ -74,11 +75,12 @@ paths:
           $ref: '#/components/responses/404'
         '429':
           $ref: '#/components/responses/429'
-  /employee/search/:
+  /v1/pet/search/:
     get:
       summary: Search field(s) in 'Pet' object are (petName)
       tags:
-        - Search
+        - search
+        - Pet
       operationId: searchPet
       parameters:
         - name: term
