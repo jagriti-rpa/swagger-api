@@ -1,250 +1,163 @@
----
 swagger: '2.0'
 info:
-  title: flavor-access-v2.1
-  version: Unknown
-consumes:
-- application/json
-produces:
-- application/json
+  contact: {}
 paths:
-  "/v2.1/flavors":
+  /album/{product_id}:
+    get:
+      description: Get album with the specified product ID, optionally filtering by fields
+      produces:
+        - application/json
+      tags:
+        - Content_Service_API
+      summary: Get album by product ID
+      parameters:
+        - type: string
+          description: Product ID of the album to retrieve
+          name: product_id
+          in: path
+          required: true
+        - type: string
+          description: Comma-separated list of fields to return (e.g., 'image_url')
+          name: field
+          in: query
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            additionalProperties: true
+  /albums:
+    get:
+      description: Get all albums as a JSON array
+      produces:
+        - application/json
+      tags:
+        - Content_Service_API
+      summary: Get all albums
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/domain.Album'
     post:
-      operationId: extendflavor
-      summary: Add access attribute to flavor create
-      description: |
-        Adds access attribute to the flavor create response.
+      description: Get all albums as JSON
       produces:
-      - application/json
+        - application/json
+      tags:
+        - Content_Service_API
+      summary: Get all albums
+      operationId: post-savealbums
       responses:
         '200':
-          description: 200 response
-          examples:
-            application/json: |-
-              {
-                  "flavor": {
-                      "flavor-access:is_public": false,
-                      "links": [
-                          {
-                              "href": "http://openstack.example.com/v3/flavors/10",
-                              "rel": "self"
-                          },
-                          {
-                              "href": "http://openstack.example.com/flavors/10",
-                              "rel": "bookmark"
-                          }
-                      ],
-                      "ram": 1024,
-                      "ephemeral": 0,
-                      "disabled": false,
-                      "vcpus": 2,
-                      "swap": 0,
-                      "disk": 10,
-                      "id": "10",
-                      "name": "test_flavor"
-                  }
-              }
-  "/v2.1/flavors/detail":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/domain.Album'
+  /albums_update/{product_id}:
+    put:
+      description: Update an existing album with the provided JSON body
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Content_Service_API
+      summary: Update an existing album
+      parameters:
+        - type: string
+          description: Product ID of the album to update
+          name: product_id
+          in: path
+          required: true
+        - description: Album object with updated data
+          name: album
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/domain.Album'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Album'
+  /usermysql:
     get:
-      operationId: addaccessresponse
-      summary: Add access attribute to flavor detail
-      description: |
-        Extends flavor detail to add access attribute to the response of flavor detail.
-      produces:
-      - application/json
+      description: Get all users and save them to MongoDB, then publish to RabbitMQ
+      tags:
+        - Content_Service_API
+      summary: Get all users
       responses:
         '200':
-          description: 200 response
-          examples:
-            application/json: |-
-              {
-                  "flavors": [
-                      {
-                          "flavor-access:is_public": true,
-                          "links": [
-                              {
-                                  "href": "http://openstack.example.com/v3/flavors/1",
-                                  "rel": "self"
-                              },
-                              {
-                                  "href": "http://openstack.example.com/flavors/1",
-                                  "rel": "bookmark"
-                              }
-                          ],
-                          "ram": 512,
-                          "ephemeral": 0,
-                          "disabled": false,
-                          "vcpus": 1,
-                          "swap": 0,
-                          "disk": 1,
-                          "id": "1",
-                          "name": "m1.tiny"
-                      },
-                      {
-                          "flavor-access:is_public": true,
-                          "links": [
-                              {
-                                  "href": "http://openstack.example.com/v3/flavors/2",
-                                  "rel": "self"
-                              },
-                              {
-                                  "href": "http://openstack.example.com/flavors/2",
-                                  "rel": "bookmark"
-                              }
-                          ],
-                          "ram": 2048,
-                          "ephemeral": 0,
-                          "disabled": false,
-                          "vcpus": 1,
-                          "swap": 0,
-                          "disk": 20,
-                          "id": "2",
-                          "name": "m1.small"
-                      },
-                      {
-                          "flavor-access:is_public": true,
-                          "links": [
-                              {
-                                  "href": "http://openstack.example.com/v3/flavors/3",
-                                  "rel": "self"
-                              },
-                              {
-                                  "href": "http://openstack.example.com/flavors/3",
-                                  "rel": "bookmark"
-                              }
-                          ],
-                          "ram": 4096,
-                          "ephemeral": 0,
-                          "disabled": false,
-                          "vcpus": 2,
-                          "swap": 0,
-                          "disk": 40,
-                          "id": "3",
-                          "name": "m1.medium"
-                      },
-                      {
-                          "flavor-access:is_public": true,
-                          "links": [
-                              {
-                                  "href": "http://openstack.example.com/v3/flavors/4",
-                                  "rel": "self"
-                              },
-                              {
-                                  "href": "http://openstack.example.com/flavors/4",
-                                  "rel": "bookmark"
-                              }
-                          ],
-                          "ram": 8192,
-                          "ephemeral": 0,
-                          "disabled": false,
-                          "vcpus": 4,
-                          "swap": 0,
-                          "disk": 80,
-                          "id": "4",
-                          "name": "m1.large"
-                      },
-                      {
-                          "flavor-access:is_public": true,
-                          "links": [
-                              {
-                                  "href": "http://openstack.example.com/v3/flavors/5",
-                                  "rel": "self"
-                              },
-                              {
-                                  "href": "http://openstack.example.com/flavors/5",
-                                  "rel": "bookmark"
-                              }
-                          ],
-                          "ram": 16384,
-                          "ephemeral": 0,
-                          "disabled": false,
-                          "vcpus": 8,
-                          "swap": 0,
-                          "disk": 160,
-                          "id": "5",
-                          "name": "m1.xlarge"
-                      }
-                  ]
-              }
-  "/v2.1/flavors/1":
-    get:
-      operationId: extendflavorshow
-      summary: Add access attribute to flavor show
-      description: |
-        Extends flavor show to add access attribute to the flavor show response.
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: 200 response
-          examples:
-            application/json: |-
-              {
-                  "flavor": {
-                      "flavor-access:is_public": true,
-                      "links": [
-                          {
-                              "href": "http://openstack.example.com/v3/flavors/1",
-                              "rel": "self"
-                          },
-                          {
-                              "href": "http://openstack.example.com/flavors/1",
-                              "rel": "bookmark"
-                          }
-                      ],
-                      "ram": 512,
-                      "ephemeral": 0,
-                      "disabled": false,
-                      "vcpus": 1,
-                      "swap": 0,
-                      "disk": 1,
-                      "id": "1",
-                      "name": "m1.tiny"
-                  }
-              }
-  "/v2.1/flavors/10/action":
-    post:
-      operationId: removeflavoraccess
-      summary: Remove flavor access
-      description: |
-        Removes flavor access for tenant.
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: 200 response
-          examples:
-            application/json: |-
-              {
-                  "flavor_access": [
-                      {
-                          "tenant_id": "openstack",
-                          "flavor_id": "10"
-                      }
-                  ]
-              }
-  "/v2.1/flavors/10/flavor-access":
-    get:
-      operationId: returnaccesslist
-      summary: Return access list
-      description: |
-        Returns access list by flavor id.
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: 200 response
-          examples:
-            application/json: |-
-              {
-                  "flavor_access": [
-                      {
-                          "tenant_id": "openstack",
-                          "flavor_id": "10"
-                      },
-                      {
-                          "tenant_id": "fake_tenant",
-                          "flavor_id": "10"
-                      }
-                  ]
-              }
+          description: OK
+definitions:
+  domain.Album:
+    type: object
+    properties:
+      image_url:
+        type: string
+      meta:
+        $ref: '#/definitions/domain.Meta'
+      product_id:
+        type: string
+  domain.DerivedDict:
+    type: object
+    properties:
+      blue:
+        type: string
+      duplicate:
+        type: string
+      exif_dict:
+        type: string
+      fourier_transform_blur:
+        type: string
+      gradient_magnitude_blur:
+        type: string
+      green:
+        type: string
+      image_metric:
+        type: string
+      laplacian_variance_blur:
+        type: string
+      megapixels:
+        type: string
+      ppi:
+        type: string
+      red:
+        type: string
+  domain.Meta:
+    type: object
+    properties:
+      derived:
+        $ref: '#/definitions/domain.DerivedDict'
+      parent:
+        $ref: '#/definitions/domain.ParentDict'
+  domain.ParentDict:
+    type: object
+    properties:
+      author:
+        type: string
+      copyright:
+        type: string
+      description:
+        type: string
+      height:
+        type: string
+      image_format:
+        type: string
+      image_mode:
+        type: string
+      image_name:
+        type: string
+      image_shape:
+        type: string
+      keywords:
+        type: string
+      location:
+        type: string
+      size:
+        type: string
+      width:
+        type: string
