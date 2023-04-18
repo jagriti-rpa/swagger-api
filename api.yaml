@@ -1,96 +1,3033 @@
 openapi: 3.0.0
 info:
-  title: MY API LIST ON SWAGGER
-  description: This is my company API Documentation
-  version: "1.0"
-  contact:
-    email: "jagriti@gmail.com"
-  license:
-    name: Apache 2.0
-    url: "http://www.apache.org/liscences/LIS"
-
-
-#Return Users From get request
+  version: '0.00'
+  title: 'Qdeck'
+  description: ''
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Qdeck/Qdeck/0.00
+  - description: Qdeck
+    url: https://qdeck.com
+  - description: Qdeck Development
+    url: https://dqdeck.rotellacapital.com
 paths:
-  /employee:
-    get:
-     summary: Returns a string.
-     description: Check String
-     responses:
-        '200':    # status code
-          description: Successul Response
-          
-
-#Returns a User
-  /user:
-    get:
-      summary: Returns a list of users.
-      description: People Who are already registered
-      responses:
-        '200':    # status code
-          description: Successul Response
-          content:
-            application/json:
-              schema: 
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-
-#Returns an array of Users
-  /users:
-    get:
-      summary: Returns a list of users.
-      description: People Who are already registered
-      responses:
-        '200':    # status code
-          description: Successul Response
-          content:
-            application/json:
-              schema: 
-                type: array
-                items: 
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-
-
-#Get Request with path id
-  /users/{userId}:
-    get:
-      summary: Returns a user by ID.
-      description: Returns the Specific User
+  /v1/clients/{user_id}:
+    delete:
+      description: Deletes a clients accounts
+      tags:
+        - Clients
       parameters:
-        - name: userId
+        - name: user_id
           in: path
           required: true
           schema:
-            type : integer
-            format: int64
-      responses: 
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the client
+        '403':
+          description: Requesting user doesn't have permission to delete the clients account.   This is due to the user not being a client or the user doesn't belong to the requesting users company.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User wasn't found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+  /v1/clients/{user_id}/accounts:
+    put:
+      description: Updates a clients accounts
+      tags:
+        - Clients
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+      responses:
         '200':
-          description: OK
+          description: Successfully updated the clients accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Requesting user doesn't have permission to update the users accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User wasn't found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+  /v1/import/client/accounts:
+    post:
+      description: Uploads client accounts
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          text/csv:
+            schema:
+              type: string
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Successfully imported client accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportAccountsResponse'
+        '202':
+          description: Imported account file errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadedFileError' 
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+            
+  /v1/companies:
+    get:
+      description: Fetches all companies that your account is permitted to view
+      tags:
+        - Companies
+      responses:
+        '200':
+          description: Successfully returned all companies
           content:
             application/json:
               schema:
                 type: object
-                example: {name: jagriti}
+                properties:
+                  companies:
+                    $ref: '#/components/schemas/Company'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+    post:
+      description: Creates a new company
+      tags:
+        - Companies
+      requestBody:
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyCreateRequest'
+      responses:
+        '200':
+          description: Successfully created a company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '404':
+          description: Dashboard, allowed video, allowed product or allowed showcase wasn't found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '409':
+          description: Company name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /v1/companies/{company_id}:
+    put:
+      description: Updates a company.  Only send what has changed for performance enhancements.
+      tags:
+        - Companies
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyUpdateRequest'
+      responses:
+        '200':
+          description: Successfully updated the company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '404':
+          description: Company, dashboard, allowed video, allowed product or allowed showcase wasn't found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '409':
+          description: Company name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Deletes a company
+      tags:
+        - Companies
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the company
+        '404':
+          description: Company wasn't found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+                
+  /v1/companies/{company_id}/images/{image_type}/{name}.{extension}:
+    get:
+      description: Gets company image
+      tags:
+        - Companies
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: image_type
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: extension
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the company image.
+          content:
+            image/png:
+              schema:
+                  type: string
+                  format: binary
+            image/jpg:
+              schema:
+                  type: string
+                  format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Company or image wasn't found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+      
+      
+  /v1/companies/{company_id}/regenerate/invitation_links:
+    put:
+      description: Regenerates invitation links for the specified company and users types.
+      tags:
+        - Companies
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegenerateInvitationLinkRequest'
+      responses:
+        '200':
+          description: Successfully regenerated the invitation links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'     
+        '404':
+          description: Company or the user types were not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/invite:
+    post:
+      description: Invite user(s)
+      tags:
+        - Invite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationRequest'
+      responses:
+        '202':
+          description: Bulk invitation file errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadedFileError' 
+        '204':
+          description: Successfully invited user(s)
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '403':
+          description: Requesting user doesn't have the appropriate invitation permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '404':
+          description: Company or user type wasn't found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '409':
+          description: User is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+        
+  /v1/model_library/symbols:
+    get:
+      description: Returns a list of available symbols
+      tags:
+        - Model Library
+      responses:
+        '200':
+          description: Successfully returned available symbols
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbols:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ModelLibrarySymbol'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/model_library/settings:
+    get:
+      description: Returns a list of model library settings
+      tags:
+        - Model Library
+      responses:
+        '200':
+          description: Successfully returned all settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  settings:
+                    $ref: '#/components/schemas/ModelSetting'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+    put:
+      description: Update model library settings
+      tags:
+        - Model Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ModelSettingRequest'
+                    
+      responses:
+        '200':
+          description: Successfully updated all settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  settings:
+                    $ref: '#/components/schemas/ModelSetting'
+        '400':
+          description: Request issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'     
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+  /v1/model_library/base_models:
+    get:
+      description: Returns a list of base models
+      tags:
+        - Model Library
+      responses:
+        '200':
+          description: Successfully returned base models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BaseModel'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a base model
+      tags:
+        - Model Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseModelRequest'
 
+      responses:
+        '200':
+          description: Successfully created a base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseModel'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find Mercury ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: A base model with the supplied Mercury ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+                
+  /v1/model_library/base_models/{model_id}:
+    put:
+      description: Updates a base model      
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseModelRequest'
+              
+      responses:
+        '200':
+          description: Successfully updated a base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseModel'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission issues with the base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'      
+        '404':
+          description: Unable to find Mercury id or base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: A base model with the supplied Mercury ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+    delete:
+      description: Deletes a base model
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted a base model
+        '403':
+          description: Permission issues with the base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+  /v1/model_library/models:
+    get:
+      description: Returns a list of models
+      tags:
+        - Model Library
+      responses:
+        '200':
+          description: Successfully returned a list of models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+    post:
+      description: Creates a model
+      tags:
+        - Model Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+              
+      responses:
+        '200':
+          description: Successfully created a model
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'
+                
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+        '404':
+          description: Unable to find base model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: A model with the supplied base model, name and risk level already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+                
+  /v1/model_library/models/{model_id}:
+    put:
+      description: Updates a model
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+              
+      responses:
+        '200':
+          description: Successfully updated a model
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find base model or model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: A model with the supplied base model, name and risk level already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Deletes a model
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the model
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/model_libary/models/{model_id}/publish:
+    post:
+      description: Creates a standard model from a custom one
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully scheduled the model to be ran
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'   
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: A standard model with the supplied base model, name and risk level already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/model_library/models/{model_id}/deactivate:
+    put:
+      description: Deactivates job that runs the model daily
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deactivated the model
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'
+        '400':
+          description: Problems with Mercury Server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/model_library/models/{model_id}/overwrite:
+    put:
+      description: Overwrites model with the draft that references it and deletes the draft
+      tags:
+        - Model Library
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully overwrote model and deleted the draft
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+                
+  /v1/model_library/models/run:
+    put:
+      description: Runs a model on the Mercury Server
+      tags:
+        - Model Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRunRequest'
+              
+      responses:
+        '200':
+          description: Successfully scheduled the model to be ran
+          content:
+            application/json:
+              schema:  
+                $ref: '#/components/schemas/Model'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission issues with the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Unable to find the model, base model or mercury parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/model_library/results:
+    put:
+      description: Async callback endpoint to notify that the model has finished running
+      tags:
+        - Model Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelResults'
 
+      responses:
+        '200':
+            description: Successfully processed the model results
+            content:
+              application/json:
+                schema:  
+                  $ref: '#/components/schemas/Model'
+        '404':
+          description: Unable to find the model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /v1/news/report:
+    get:
+      description: Get news report 
+      tags:
+        - News
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: integer
+          description: The keyword id to generate the report on
+        - in: query
+          name: start_date
+          schema:
+            type: string
+          example: '2023-01-01'
+        - in: query
+          name: end_date
+          schema:
+            type: string
+          example: '2023-12-31'
+      responses:
+        '200':
+          description: Successfully generated the report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsReport'
+        '400':
+          description: Problems with the query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Keyword wasn't found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+                
+  /v1/templates/{template_name}:
+    get:
+      description: Downloads sample excel template
+      tags:
+        - Templates
+      parameters:
+        - name: template_name
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [invite, accounts]
+      responses:
+        '200':
+          description: Successfully download template file
+          content:
+            text/csv:
+              schema:
+                type: string
+        '404':
+          description: Template doesn't exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+
+  /v1/user_groups:
+    get:
+      description: Returns all groups the requesting user administrates
+      tags:
+        - User Groups
+      responses:
+        '200':
+          description: Successfully returned all user groups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserGroup'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new user group
+      tags:
+        - User Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupRequest'
+      responses:
+        '200':
+          description: Successfully created a user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Users are not associated with requesting users company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Users were not found, account wasn't associated with the user or unable to find the requested allocation item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Name conflict with an existing group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/user_groups/{group_id}:
+    put:
+      description: Updates a user group.  Send only what has changed for performance improvements.
+      tags:
+        - User Groups
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupRequest'
+      responses:
+        '200':
+          description: Successfully updated the user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+        '400':
+          description: Problems with the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Users are not associated with requesting users company or user doesn't have permission to update the user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Users were not found, account wasn't associated with the user or unable to find the requested allocation item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Name conflict with an existing group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Deletes a user group.
+      tags:
+        - User Groups
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the user group
+        '403':
+          description: User doesn't have permission to delete the user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User group wasn't found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+                
+  /v1/users:
+    get:
+      description: Gets users
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [advisor, client, ria_user, user]
+          description: The users role
+        - in: query
+          name: user_type
+          schema:
+            type: string
+          description: The users user type
+        - in: query
+          name: advisor_id
+          schema:
+            type: integer
+          description: The user with a role of advisor
+      responses:
+        '200':
+          description: Successfully retrieved users.  Respones vary based on query parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyUser'
+        '400':
+          description: Invalid role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+            description: Unexpected issues
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error' 
+                
 components:
   schemas:
-    User:
+    BaseModelAssetCategory:
+      type: object
+      required:
+        - category
+      properties:
+        category:
+          type: string
+          
+    BaseModelParameterItem:
+      type: object
+      properties:
+        id: 
+          type: string
+          maxLength: 50
+        parameter_id:
+          type: string
+          maxLength: 50
+        label:
+          type: string
+          maxLength: 50
+    
+    BaseModelParameter:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 50
+        standard_parameter:
+          type: boolean 
+          default: false  
+        label:
+          type: string
+          maxLength: 100
+        field_type:
+          type: string
+          maxLength: 50
+        value_type:
+          type: string
+          maxLength: 25
+          default: NULL
+        value:
+          type: string
+          maxLength: 50
+          default: NULL
+        minimum_value:
+          type: string
+          maxLength: 50
+          default: NULL
+        maximum_value:
+          type: string
+          maxLength: 50 
+          default: NULL
+        precision:
+          type: integer
+          default: NULL
+        position:
+          type: integer
+        read_only:
+          type: boolean
+          default: false 
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseModelParameterItem'
+
+    BaseModel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mercury_id:
+          type: integer
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseModelParameter'
+        asset_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseModelAssetCategory'
+            
+    BaseModelRequest:
+      type: object
+      required:
+        - mercury_id
+      properties:
+        mercury_id:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseModelParameter'
+        asset_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseModelAssetCategory'
+            
+    ModelLibrarySymbol:
+      type: object
+      required:
+        - id
+        - price_type
+      properties:
+        id:
+          type: string
+        price_type:
+          type: string
+        description:
+          type: string
+        iso_code:
+          type: string
+        sector:
+          type: string
+        rcm_symbol:
+          type: string
+        exchange_symbol:
+          type: string
+        bloomberg_symbol:
+          type: string
+        reuters_symbol:
+          type: string
+        derivative_symbol_id:
+          type: integer
+          
+    ModelSettingRequest:
+      type: object
+      required:
+        - id
+        - position
+        - visible
+      properties:
+        id:
+          type: string
+        position:
+          type: integer
+        visible:
+          type: boolean
+        
+    ModelSetting:
+      type: object
+      required:
+        - id
+        - name
+        - position
+        - visible
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          maxLength: 128
+        position:
+          type: integer
+        visible:
+          type: boolean
+          default: false
+          
+    ModelAssetCategory:
+      type: object
+      required:
+        - category
+      properties:
+        category:
+          type: string
+          
+    ModelParameterItem:
+      type: object
+      required:
+        - id
+        - parameter_id
+        - label
+      properties:
+        id: 
+          type: string
+          maxLength: 50
+        parameter_id:
+          type: string
+          maxLength: 50
+        label:
+          type: string
+          maxLength: 50
+    
+    ModelParameter:
+      type: object
+      required:
+        - id
+        - label
+        - field_type
+        - position
+      properties:
+        id:
+          type: string
+          maxLength: 50
+        standard_parameter:
+          type: boolean 
+          default: false  
+        label:
+          type: string
+          maxLength: 100
+        field_type:
+          type: string
+          maxLength: 50
+        value_type:
+          type: string
+          maxLength: 25
+          default: NULL
+        value:
+          type: string
+          maxLength: 50
+          default: NULL
+        minimum_value:
+          type: string
+          maxLength: 50
+          default: NULL
+        maximum_value:
+          type: string
+          maxLength: 50 
+          default: NULL
+        precision:
+          type: integer
+          default: NULL
+        position:
+          type: integer
+        read_only:
+          type: boolean
+          default: false 
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelParameterItem'
+            
+    ModelUniverse:
+      type: object
+      required:
+        - id
+        - price_type
+        - category
+      properties:
+        id:
+          type: string
+        price_type:
+          type: string
+        description:
+          type: string
+        iso_code:
+          type: string
+        sector:
+          type: string
+        rcm_symbol:
+          type: string
+        exchange_symbol:
+          type: string
+        bloomberg_symbol:
+          type: string
+        reuters_symbol:
+          type: string
+        derivative_symbol_id:
+          type: integer
+        category:
+          type: string
+          maxLength: 100
+        weight:
+          type: number
+          default: NULL
+          
+    ModelStatistic:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          maxLength: 128
+        value:
+          type: number
+        trade_date:
+          type: string
+          format: 'YYYY-MM-DD'
+        trade_symbol:
+          type: string
+          maxLength: 32
+        description:
+          type: string
+          maxLength: 1024
+          
+    ModelRequest:
+      type: object
+      required:
+        - base_model_id
+        - name
+      properties:
+        base_model_id:
+          type: string
+        reference_id:
+          type: string
+        model_type:
+          type: string
+          default: 'custom'
+        name:
+          type: string
+          maxLength: 100
+        risk_level_name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelParameter'
+        universe:
+          type: array
+          items:
+            required:
+              - id
+              - price_type
+              - category
+            properties:
+              id:
+                type: string
+              price_type:
+                type: string
+              category:
+                type: string
+        asset_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelAssetCategory'
+  
+    Model:
+      type: object
+      required:
+        - id
+        - base_model_id
+        - mercury_id
+        - name
+      properties:
+        id:
+          type: string
+        base_model_id:
+          type: string
+        mercury_id:
+          type: string
+        reference_id:
+          type: string
+        simulation_id:
+          type: string
+        owner_id:
+          type: integer
+        is_live:
+          type: boolean
+          default: false
+        name:
+          type: string
+          maxLength: 100
+        risk_level_name:
+          type: string
+          maxLength: 100
+        start_date:
+          type: string
+          format: 'YYYY-MM-DD'
+        end_date:
+          type: string
+          format: 'YYYY-MM-DD'
+        published: 
+          type: boolean
+          default: false
+        error:
+          type: string
+          maxLength: 4000
+        last_known_status:
+          type: string
+          maxLength: 100
+        currency:
+          type: string
+          maxLength: 3
+        last_scheduled_run:
+          type: string
+        next_scheduled_run:
+          type: string
+        request_id:
+          type: integer
+        last_simulation_time:
+          type: string
+        marketplace_id:
+          type: integer
+        model_type:
+          type: string
+        description:
+          type: string
+          maxLength: 1000
+        universe:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelUniverse'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelParameter'
+        asset_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelAssetCategory'
+        statistics:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelStatistic'
+            
+    ModelRunRequest:
+      type: object
+      properties:
+        model_id:
+          type: string
+        go_live:
+          type: boolean
+          default: true
+        get_results:
+          type: boolean
+          default: true
+        model:
+          type: object
+          properties:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+          
+    ModelResults:
+      type: object
+      required:
+        - model_id
+      properties:
+        model_id:
+          type: string
+     
+    UserGroupAllocationRequest:
+      type: object
+      required:
+        - id
+        - allocation_type
+        - allocation
+      properties:
+        id:
+          type: string
+        allocation_type:
+          type: string
+          enum: [model, marketplace]
+        allocation:
+          type: number
+          
+    UserGroupAccountRequest:
+      type: object
+      required:
+        - account
+        - custodian
+        - user_id
+      properties:
+        account:
+          type: string
+        custodian:
+          type: string
+          maxLength: 250
+        user_id:
+          type: string
+        allocation:
+          type: number
+          default: 100
+          
+    UserGroupRequest:
       type: object
       required:
         - name
-        - id
+      properties:
+        name: 
+          type: string
+          maxLength: 100
+        fee:
+          type: number
+          default: 0
+        group_type:
+          type: string
+          default: 'client'
+        admins:
+          type: array
+          items:
+            type: string
+            example: '123456789'
+            description: Array of user ids.  Default is requesting user id.
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAllocationRequest'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAccountRequest'
+      
+    UserGroupAdmin:
+      type: object
       properties:
         id:
           type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        user_type:
+          type: string
+        img:
+          type: string
+        user_image:
+          type: string
+        company_image:
+          type: string
+        company:
+          type: string
+        company_id:
+          type: string
+          
+    UserGroupAccountItem:
+      type: object
+      properties:
+        account: 
+          type: string
+        custodian:
+          type: string
+          
+    UserGroupAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        user_type:
+          type: string
+        img:
+          type: string
+        user_image:
+          type: string
+        company_image:
+          type: string
+        company:
+          type: string
+        company_id:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAccountItem'
+            
+    UserGroupAllocation:
+      type: object
+      required:
+        - id
+        - name
+        - allocation
+      properties:
+        id: 
+          type: string
         name:
+          type: string
+        allocation:
+          type: number
+        allocation_type:
+          type: string
+        risk_level_name:
+          type: string
+        model_type:
+          type: string
+          
+    UserGroup:
+      type: object
+      properties:
+        id:
+          type: string
+        owner_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        fee:
+          type: number
+          default: 0
+        group_type:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAdmin'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAccount'
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupAllocation'
+            
+    UserAccount:
+      type: object
+      required:
+        - account
+      properties:
+        account:
+          type: string
+          maxLength: 50
+        custodian:
+          type: string
+          maxLength: 250
+        name:
+          type: string
+          maxLength: 250
+        account_type:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+          
+    UserAllocation:
+      type: object
+      required:
+        - id
+        - account
+        - allocation_type
+        - allocation
+        - name
+      properties:
+        id:
+          type: string
+        account:
+          type: string
+          maxLength: 50
+        allocation_type:
+          type: string
+          enum: [model, marketplace, user_group]
+        allocation:
+          type: number
+        name:
+          type: string
+        custodian:
+          type: string
+        risk_level_name:
+          type: string
+        model_type:
+          type: string
+        fee:
+          type: number
+        group_type:
+          type: string
+          
+          
+    UserSubscriptionComponent:
+      type: object
+      properties:
+        id:
+          type: string
+        cancel_at:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        subscription_expiration:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        product_id:
+          type: string
+        name: 
+          type: string
+        last_email_notification:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        access:
+          type: string
+          
+    UserSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+        good_through:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        status:
+          type: string
+        trial_expiration:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSubscriptionComponent'
+            
+    UserAccessBlock:
+      type: object
+      properties:
+        allow_intermediates:
+          type: boolean
+        ohlc:
+          type: boolean
+        live:
+          type: boolean
+        marketplace:
+          type: boolean
+        reporting:
+          type: boolean
+        strategies:
+          type: boolean
+        portfolios:
+          type: boolean
+        news:
+          type: boolean
+        imported_strategies:
+          type: boolean
+        native_strategies:
+          type: boolean
+        viewer:
+          type: boolean
+        invite:
+          type: boolean
+        demos:
+          type: boolean
+        clients:
+          type: boolean
+        accounting:
+          type: boolean
+        planning:
+          type: boolean
+        transfers:
+          type: boolean
+        resources:
+          type: boolean
+        companies:
+          type: boolean
+        domains:
+          type: boolean
+        dashboard:
+          type: boolean
+        tamarac:
+          type: boolean
+        oms:
+          type: boolean
+        model_library:
+          type: boolean
+        model_library_researcher:
+          type: boolean
+        market_analysis:
+          type: boolean
+        freeform_content:
+          type: boolean
+        market_data:
+          type: object
+          properties:
+            rcm:
+              type: boolean
+            refinitiv:
+              type: boolean
+            refinitiv_real_time:
+              type: boolean
+        client_dashboard:
+          type: boolean
+        performance:
+          type: boolean
+        marketplace_promotion:
+          type: boolean
+        manage_global_users:
+          type: boolean
+          
+    SymbologyOption:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        user_type:
+          type: string
+        role:
+          type: string
+        img:
+          type: string
+        user_image:
+          type: string
+        company_image:
+          type: string
+        company:
+          type: string
+        company_id:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAccount'
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAllocation'
+            
+    CompanyUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        user_type:
+          type: string
+        role:
+          type: string
+        img:
+          type: string
+        user_image:
+          type: string
+        company_image:
+          type: string
+        company:
+          type: string
+        company_id:
+          type: string
+          
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        fname:
+          type: string
+        lname:
+          type: string
+        email:
+          type: string
+        user_type:
+          type: string
+        role:
+          type: string
+        img:
+          type: string
+        user_image:
+          type: string
+        company_image:
+          type: string
+        company:
+          type: string
+        company_id:
+          type: string
+        log_detail:
+          type: string
+        tour_complete:
+          type: boolean
+        tour_step:
+          type: integer
+        night_mode:
+          type: boolean
+        email_notification:
+          type: boolean
+        password_reset_required:
+          type: boolean
+        crossbar_token:
+          type: string
+        active_account:
+          type: boolean
+        acting_as:
+          type: integer
+        symbology_options:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymbologyOption'
+        default_symbology:
+          type: string
+        dark_theme_id:
+          type: string
+        dark_theme:
+          $ref: '#/components/schemas/Theme'
+        light_theme_id:
+          type: string
+        light_theme:
+          $ref: '#/components/schemas/Theme'
+        theme_mode:
+          type: string
+          enum: [dark, light]
+        dashboard_id:
+          type: string
+        dashboard:
+          $ref: '#/components/schemas/Dashboard'
+        phone_number:
+          type: string
+        default_landing:
+          type: string
+        last_login_time:
+          type: string
+          example: '2023-01-01T185:40:48Z'
+        security_group:
+          type: string
+        resource_age_seconds:
+          type: integer
+        refresh_age_seconds:
+          type: integer
+        overwrite_strategies:
+          type: boolean
+        overwrite_portfolios:
+          type: boolean
+        success_close_seconds:
+          type: integer
+        show_advanced_tools:
+          type: boolean
+        default_hidden_filters:
+          type: boolean
+        trial_end_date:
+          type: string
+          example: '2023-01-01'
+        completed_client_registration:
+          type: boolean
+        item_limit:
+          type: integer
+        item_count:
+          type: integer
+        date_format:
+          type: string
+        start_of_week:
+          type: integer
+        end_of_week:
+          type: integer
+        item_hwm:
+          type: integer
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSubscription'
+        public_company:
+          type: boolean
+        tutorial_complete:
+          type: boolean
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAccount'
+        access:
+          $ref: '#/components/schemas/UserAccessBlock'
+        x_users:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyUser'
+      
+    AccountRequest:
+      type: object
+      required:
+        - accounts
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAccount'
+    
+    NewsReport:
+      type: object
+      properties:
+        report:
+          type: string
+          
+    CompanyContact:
+      type: object
+      required:
+        - id
+        - email
+        - label
+      properties:
+        id: 
+          type: string
+        email:
+          type: string
+          maxLength: 500
+        label:
+          type: string
+          maxLength: 500
+        context:
+          type: string
+          maxLength: 200
+          
+    RegenerateInvitationLinkRequest:
+      type: object
+      required:
+        - user_types
+      properties:
+        user_types:
+          type: array
+          items:
+            type: string
+            example: 'RIA User'
+            
+    CompanyContactRequest:
+      type: object
+      required:
+        - email
+        - label
+      properties:
+        id: 
+          type: string
+        email:
+          type: string
+          maxLength: 500
+        label:
+          type: string
+          maxLength: 500
+        context:
+          type: string
+          maxLength: 200
+          
+    CompanyProduct:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id: 
+          type: string
+        name:
+          type: string
+          maxLength: 250
+    
+    CompanyAllowedShowcase:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id: 
+          type: string
+        name:
+          type: string
+          maxLength: 500
+    
+    CompanyAllowedVideo:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id: 
+          type: string
+        name:
+          type: string
+          maxLength: 500
+          
+    CompanyUserTypeRequest:
+      type: object
+      required:
+        - user_type
+        - access_type
+      properties:
+        user_type:
+          type: string
+          maxLength: 50
+        access_type:
+          type: string
+          enum: [dynamic, static]
+        default_user:
+          type: boolean
+          default: False
+        default_landing:
+          type: string
+        trial_product:
+          type: string
+        user_limit:
+          type: integer
+        registration_notes:
+          type: string
+        role:
+          type: string
+          default: 'user'
+          enum: [user, ria_user, advisor, client]
+        allow_intermediates:
+          type: boolean
+          default: False
+        access_imported_strategies:
+          type: boolean
+          default: False
+        access_live:
+          type: boolean
+          default: False
+        access_ohlc:
+          type: boolean
+          default: False
+        access_market_place:
+          type: boolean
+          default: False
+        access_strategies:
+          type: boolean
+          default: False
+        access_native_strategies:
+          type: boolean
+          default: False
+        access_reporting:
+          type: boolean
+          default: False
+        access_portfolios:
+          type: boolean
+          default: False
+        access_news:
+          type: boolean
+          default: False
+        access_viewer:
+          type: boolean
+          default: False
+        access_demos:
+          type: boolean
+          default: False
+        access_invite:
+          type: boolean
+          default: False
+        access_clients:
+          type: boolean
+          default: False
+        access_accounting:
+          type: boolean
+          default: False
+        access_planning:
+          type: boolean
+          default: False
+        access_transfers:
+          type: boolean
+          default: False
+        access_resources:
+          type: boolean
+          default: False
+        access_companies:
+          type: boolean
+          default: False
+        access_domains:
+          type: boolean
+          default: False
+        access_dashboard:
+          type: boolean
+          default: False
+        access_tamarac:
+          type: boolean
+          default: False
+        access_oms:
+          type: boolean
+          default: False
+        access_rcm_market_data:
+          type: boolean
+          default: False
+        access_refinitiv_market_data:
+          type: boolean
+          default: False
+        refinitiv_real_time:
+          type: boolean
+          default: False
+        access_model_library:
+          type: boolean
+          default: False
+        access_model_library_researcher:
+          type: boolean
+          default: False
+        access_market_analysis:
+          type: boolean
+          default: False
+        access_client_dashboard:
+          type: boolean
+          default: False
+        access_performance:
+          type: boolean
+          default: False
+        access_freeform_content:
+          type: boolean
+          default: False
+        access_company:
+          type: boolean
+          default: False
+        update_users:
+          type: boolean
+          default: False
+        marketplace_promotion:
+          type: boolean
+          default: False
+        
+    CompanyCreateRequest:
+      type: object
+      required: 
+        - name
+        - address
+        - city
+        - zip
+        - country
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        guid:
+          type: string
+        address:
+          type: string
+          maxLength: 250
+        address_extended:
+          type: string
+          maxLength: 50
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        zip:
+          type: string
+          maxLength: 25
+        country:
+          type: string
+          maxLength: 2
+        phone_number:
+          type: string
+          maxLength: 25
+        logo:
+          type: string
+          maxLength: 256
+        dashboard_id:
+          type: integer
+        item_limit:
+          type: integer
+        primary_company:
+          type: boolean
+          default: False
+        public_company:
+          type: boolean
+          default: False
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyContactRequest'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyProduct'
+        allowed_showcases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedShowcase'
+        allowed_videos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedVideo'
+        marketplace_managers:
+          type: array
+          items:
+            type: string
+        user_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyUserTypeRequest'
+            
+    CompanyUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        guid:
+          type: string
+        address:
+          type: string
+          maxLength: 250
+        address_extended:
+          type: string
+          maxLength: 50
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        zip:
+          type: string
+          maxLength: 25
+        country:
+          type: string
+          maxLength: 2
+        phone_number:
+          type: string
+          maxLength: 25
+        logo:
+          type: string
+          maxLength: 256
+        dashboard_id:
+          type: integer
+        item_limit:
+          type: integer
+        primary_company:
+          type: boolean
+          default: False
+        public_company:
+          type: boolean
+          default: False
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyContactRequest'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyProduct'
+        allowed_showcases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedShowcase'
+        allowed_videos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedVideo'
+        marketplace_managers:
+          type: array
+          items:
+            type: string
+        user_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyUserTypeRequest'
+ 
+    CompanyAccessBlock:
+      type: object
+      description:  Only visible with admin access.  Invite access will display the fields that are set to true.
+      properties:
+        allow_intermediates:
+          type: boolean
+        ohlc:
+          type: boolean
+        live:
+          type: boolean
+        marketplace:
+          type: boolean
+        reporting:
+          type: boolean
+        strategies:
+          type: boolean
+        portfolios:
+          type: boolean
+        news:
+          type: boolean
+        imported_strategies:
+          type: boolean
+        native_strategies:
+          type: boolean
+        viewer:
+          type: boolean
+        invite:
+          type: boolean
+        demos:
+          type: boolean
+        clients:
+          type: boolean
+        accounting:
+          type: boolean
+        planning:
+          type: boolean
+        transfers:
+          type: boolean
+        resources:
+          type: boolean
+        companies:
+          type: boolean
+        domains:
+          type: boolean
+        dashboard:
+          type: boolean
+        tamarac:
+          type: boolean
+        oms:
+          type: boolean
+        model_library:
+          type: boolean
+        model_library_researcher:
+          type: boolean
+        market_analysis:
+          type: boolean
+        freeform_content:
+          type: boolean
+        market_data:
+          type: object
+          properties:
+            rcm:
+              type: boolean
+            refinitiv:
+              type: boolean
+            refinitiv_real_time:
+              type: boolean
+        client_dashboard:
+          type: boolean
+        performance:
+          type: boolean
+        marketplace_promotion:
+          type: boolean
+        
+    CompanyUserType:
+      type: object
+      properties:
+        user_type:
+          type: string
+          maxLength: 50
+        access_type:
+          type: string
+          enum: [dynamic, static]
+        default_user:
+          type: boolean
+        default_landing:
+          type: string
+          maxLength: 50
+        trial_product:
+          type: string
+          maxLength: 50
+        user_limit:
+          type: integer
+        registration_notes:
+          type: string
+        invitation_link:
+          description:  Only visible with admin or invite access.
+          type: string
+        role:
+          type: string
+        access:
+          $ref: '#/components/schemas/CompanyAccessBlock'
+
+    Company:
+      properties:
+        id: 
+          type: string
+        name: 
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 250
+        address_extended:
+          type: string
+          maxLength: 50
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        zip:
+          type: string
+          maxLength: 25
+        country:
+          type: string
+          maxLength: 2
+        phone_number:
+          type: string
+          maxLength: 25
+        logo:
+          type: string
+          maxLength: 256
+        dashboard_id:
+          type: integer
+        item_limit:
+          type: integer
+        primary_company:
+          type: boolean
+          default: False
+        public_company:
+          type: boolean
+          default: False
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyContact'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyProduct'
+        managers:
+          type: array
+          items:
+            type: string
+        allowed_showcases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedShowcase'
+        allowed_videos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAllowedVideo'
+        user_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyUserType'
+            
+    InvitationRequest:
+      type: object
+      required:
+        - user_type
+        - company_id
+      properties:
+        user_type:
+          type: string
+        company_id:
+          type: string
+        uploaded_file:
+          type: string
+          description: Base64 encoded file data for bulk invitation.
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        trial:
+          type: boolean
+          default: False
+        trial_product:
+          type: string
+          default: Taken from supplied user type if key isn't present
+        security_group:
+          type: string
+          default: 17
+        role:
+          type: string
+          default: Taken from supplied user type if key isn't present
+        allow_intermediates:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_imported_strategies:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_live:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_ohlc:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_market_place:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_strategies:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_native_strategies:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_reporting:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_portfolios:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_news:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_viewer:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_demos:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_invite:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_clients:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_accounting:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_planning:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_transfers:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_resources:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_companies:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_domains:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_dashboard:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_tamarac:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_oms:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_rcm_market_data:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_refinitiv_market_data:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        refinitiv_real_time:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_model_library:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_model_library_researcher:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_market_analysis:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_client_dashboard:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_performance:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_freeform_content:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        access_company:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        update_users:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        marketplace_promotion:
+          type: boolean
+          default: Taken from supplied user type if key isn't present
+        default_landing:
+          type: string
+          default: Taken from supplied user type if key isn't present
+        default_hidden_filters:
+          type: boolean
+          default: False
+        show_advanced_tools:
+          type: boolean
+          default: False
+        force_refresh:
+          type: boolean
+          default: False
+        include_external_accounts:
+          type: boolean
+          default: False
+        item_limit:
+          type: string
+          default: Taken from supplied company if key isn't present
+          
+          
+    UploadedFileLineError:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_number:
+          type: integer
+        line:
+          type: integer
+        error:
+          type: string
+        value:
+          type: string
+      
+    UploadedFileError:
+      type: object
+      properties:
+        name:
+          type: string
+        parsed:
+          type: boolean
+        error:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/UploadedFileLineError'
+            
+    ImportAccountsResponse:
+      type: object
+      properties:
+        clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+            
+    Theme:
+      type: object
+      properties:
+        id:
+          type: string
+        owner_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        theme:
+          type: string
+        domain_id:
+          type: string
+          
+    Dashboard:
+      type: object
+      properties:
+        id: 
+          type: string
+        label:
+          type: string
+        route:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
           type: string
