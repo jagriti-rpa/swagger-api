@@ -1,630 +1,236 @@
-
- openapi: 3.0.0
+swagger: "2.0"
 info:
-  version: 1.16.0
-  title: SGS Integration Registrant Api
-servers: 
-  - url:  https://sgs.staging.showcare.io/registrants/
-tags:
-  - name: Groups
-  - name: Contact
-  - name: Registrants
-paths: 
-  /registrants/{profile}/{id}:
+  title: MY API LIST ON SWAGGER
+  description: This is my company API Documentation
+  version: 1.0
+  contact:
+    email: jagriti@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/liscences/LIS"
+  servers:
+    -url: http://localhost:4000
+    description: THis is my local Server
+
+schemes: [https,http]
+
+
+#Return Users From get request
+paths:
+  /employee:
     get:
-      tags: 
-        - Registrants
-      summary: Get Registrant by ID
-      description: Returns the registrant data from the specified registrant ID
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: id
-         description: Registrant ID
-         required: true
-         schema:
-           type: string
+     summary: Returns a string.
+     description: Check String
+     responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: string
+          
+
+#Returns a User
+  /user:
+    get:
+      summary: Returns a list of users.
+      description: People Who are already registered
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+
+#Returns an array of Users
+  /users:
+    get:
+      summary: Returns a list of users.
+      description: People Who are already registered
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: array
+            items: 
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+
+
+#Get Request with path id
+  /users/{userId}:
+    get:
+      summary: Returns a user by ID.
+      description: Returns the Specific User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type : integer
+            format: int64
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object
+            example: {name: jagriti}
+
+#Post json/body & Body required
+  # /create:
+  #   post:
+  #     summary: Adds a new user
+  #     produces:
+  #       - application/json
+  #     consumes:
+  #       - application/json
+  #     parameters:
+  #       - in: body
+  #         name: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - name
+  #             - id
+  #           properties:
+  #             id:
+  #               type: integer
+  #             name:
+  #               type: string
+  #     responses:
+  #       '200':
+  #         description: OK
+
+
+#Defining Body Reference
+  /create:
+    post:
+      summary: Adds a new user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+           $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: OK
+
+
+#Query
+#Get Query
+  /usersQuery:
+    get:
+      summary: Returns a user by ID.
+      description: Returns the Specific User
+      parameters:
+        - in: query
+          name: id
+          type: integer
+          enum: [1, 2]
+          required: true
+        # - in: query
+        #   name: id
+        #   type: integer
+        #   enum: [1, 2]
+        #   required: true
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object
+            example: {name: jsd,id: 11}
+
+
+
+#File Upload Multiform Data
+  /upload:
+    post:
+      tags:
+        - Upload
+      summary: Upload Video/Image for Inferring
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The file to upload.
+        # - in: formData
+        #   name: app
+        #   type: string
+        #   required: true
+        #   description: Name of the model.
+        # - in: formData
+        #   name: id
+        #   type: string
+        #   required: true
+        #   description: Some random Id.
       responses:
         200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Registrant'
+          description: Successful Response
         400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Registrant not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/externalId/{externalId}:
+          description: User Error
+        500:
+          description: Internal Server Error
+
+
+
+#In Headers
+  # /int:
     get:
-      tags: 
-        - Registrants
-      summary: Get Registrant Profile by External ID
-      description: Returns the registrant data from the specified external id
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: externalId
-         description: External Registrant Id
-         required: true
-         schema:
-           type: string
+      summary: Checks if the server is alive
+      parameters:
+        - in: header
+          name: X-Request-ID
+          schema:
+            type: integer
+            format: uuid
+          required: true
       responses:
         200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Registrant'
+          description: Successful Response
         400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Registrant not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/badgeId/{badgeId}:
-    get:
-      tags: 
-        - Registrants
-      summary: Get Registrant Profile by Badge ID
-      description: Returns the registrant data from the specified badge ID
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: badgeId
-         description: Registrant Badge Id
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Registrant'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Registrant not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/contacts/{id}:
-    get:
-      tags: 
-        - Contact
-      summary: Get Contact by ID
-      description: Returns the contact data from the specified contact ID
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: id
-         description: Contact ID
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Contact'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Registrant not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/contacts/email/{email}:
-    get:
-      tags: 
-        - Contact
-      summary: Get Contact by Email
-      description: Returns the contact data from the specified contact Email
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: email
-         description: Email of the Contact
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Contact'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/contacts/token/{token}:
-    get:
-      tags: 
-        - Contact
-      summary: Get Contact by Token
-      description: Returns the contact data from the specified contact Token
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: token
-         description: Token of the Contact
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Contact'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/groups/{groupId}:
-    get:
-      tags: 
-        - Groups
-      summary: Get Group by ID
-      description: Return group from the specified profile by group ID
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-       - in: path
-         name: groupId
-         description: Group Id
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Group'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
-  /registrants/{profile}/groups:
-    get:
-      tags: 
-        - Groups
-      summary: Get Groups
-      description: Returns all groups from the specified profile
-      parameters: 
-       - in: path
-         name: profile
-         description: Profile Name
-         required: true
-         schema:
-           type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Group'
-        400:
-          description: Provided invalid profile or parameters
-        403:
-          description: Provided invalid credentials
-        404:
-          description: Not found
-        501:
-          description: Operation not implemented for the given profile
-      security:
-        - ApiKeyAuth: []
+          description: User Error
+        500:
+          description: Internal Server Error
+
+#Cokies
+  # /ping:
+  #   get:
+  #     summary: Checks if the server is alive
+  #     parameters:
+  #       - in: cookie
+  #         name: debug
+  #         schema:
+  #           type: integer
+  #           enum: [0, 1]
+  #           default: 0
+  #       - in: cookie
+  #         name: csrftoken
+  #         schema:
+  #           type: string
+
+
 components:
   schemas:
-    Contact:
+    User:
       type: object
+      required:
+        - name
+        - id
       properties:
         id:
-          type: string
-          nullable: true
-        prefix:
-          type: string
-          nullable: true
-        firstName:
-          type: string
-          nullable: true
-        lastName:
-          type: string
-          nullable: true
-        email:
-          type: string
-          nullable: true
-        fax:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true
-        businessAddress:
-          type: object
-          properties:
-            line1:
-              type: string
-              nullable: true
-            line2:
-              type: string
-              nullable: true
-            line3:
-              type: string
-              nullable: true
-            city:
-              type: string
-              nullable: true
-            country:
-              type: string
-              nullable: true
-            postalCode:
-              type: string
-              nullable: true
-            state:
-              type: string
-              nullable: true
-        businessPhone:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true
-        homeAddress:
-          type: object
-          properties:
-            line1:
-              type: string
-              nullable: true
-            line2:
-              type: string
-              nullable: true
-            line3:
-              type: string
-              nullable: true
-            city:
-              type: string
-              nullable: true
-            country:
-              type: string
-              nullable: true
-            postalCode:
-              type: string
-              nullable: true
-            state:
-              type: string
-              nullable: true
-        homePhone:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true
-        mobilePhone:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true
-    Group:
-      type: object
-      properties:
-        id:
-          type: string
-          nullable: true
-        businessId:
-          type: string
-          nullable: true
+          type: integer
         name:
           type: string
-          nullable: true
-        address:
-          type: object
-          properties:
-            line1:
-              type: string
-              nullable: true
-        fax:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true
-        phone:
-          type: object
-          properties:
-            countryCode:
-              type: string
-              nullable: true
-            number:
-              type: string
-              nullable: true
-            ext:
-              type: string
-              nullable: true    
-    Registrant:
-      type: object
-      properties:
-        contact:
-          type: object
-          properties:
-            id:
-              type: string
-              nullable: true
-            businessId:
-              type: string
-              nullable: true
-            groupId:
-              type: string
-              nullable: true
-            prefix:
-              type: string
-              nullable: true
-            firstName:
-              type: string
-              nullable: true
-            middleName:
-              type: string
-              nullable: true
-            lastName:
-              type: string
-              nullable: true
-            suffix:
-              type: string
-              nullable: true
-            degree:
-              type: string
-              nullable: true
-            title:
-              type: string
-              nullable: true
-            company:
-              type: string
-              nullable: true
-            email:
-              type: string
-              nullable: true
-            fax:
-              type: object
-              properties:
-                countryCode:
-                  type: string
-                  nullable: true
-                number:
-                  type: string
-                  nullable: true
-                ext:
-                  type: string
-                  nullable: true
-            businessAddress:
-              type: object
-              properties:
-                line1:
-                  type: string
-                  nullable: true
-                line2:
-                  type: string
-                  nullable: true
-                line3:
-                  type: string
-                  nullable: true
-                city:
-                  type: string
-                  nullable: true
-                country:
-                  type: string
-                  nullable: true
-                postalCode:
-                  type: string
-                  nullable: true
-                state:
-                  type: string
-                  nullable: true
-            businessPhone:
-              type: object
-              properties:
-                countryCode:
-                  type: string
-                  nullable: true
-                number:
-                  type: string
-                  nullable: true
-                ext:
-                  type: string
-                  nullable: true
-            homeAddress:
-              type: object
-              properties:
-                line1:
-                  type: string
-                  nullable: true
-                line2:
-                  type: string
-                  nullable: true
-                line3:
-                  type: string
-                  nullable: true
-                city:
-                  type: string
-                  nullable: true
-                country:
-                  type: string
-                  nullable: true
-                postalCode:
-                  type: string
-                  nullable: true
-                state:
-                  type: string
-                  nullable: true
-            homePhone:
-              type: object
-              properties:
-                countryCode:
-                  type: string
-                  nullable: true
-                number:
-                  type: string
-                  nullable: true
-                ext:
-                  type: string
-                  nullable: true
-            mobilePhone:
-              type: object
-              properties:
-                countryCode:
-                  type: string
-                  nullable: true
-                number:
-                  type: string
-                  nullable: true
-                ext:
-                  type: string
-                  nullable: true
-        registration:
-          type: object
-          properties:
-            id: 
-              type: string
-              nullable: true
-            badgeId: 
-              type: string
-              nullable: true
-            eventId: 
-              type: string
-              nullable: true
-            contactId: 
-              type: string
-              nullable: true
-            registrationDate: 
-              type: string
-              nullable: true
-              format: date-time
-            attendanceDate: 
-              type: string
-              nullable: true
-              format: date-time
-            cancellationDate: 
-              type: string
-              nullable: true
-              format: date-time
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key
