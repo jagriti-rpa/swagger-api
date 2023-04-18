@@ -1,55 +1,302 @@
+openapi: 3.0.0
 info:
-  title: test
   version: 1.0.0
-consumes:
-  - application/json
-produces:
-  - application/json
-swagger: '2.0'
-securityDefinitions:
-  keystone:
-    description: OpenStack Keystone Authentication
-    type: apiKey
-    in: header
-    name: x-auth-token
+  title: Sky
+  description: ''
+  
+tags: 
+  - name: Evaluations
+    description: Operaciones relacionadas con las Evaluaciones.
 
-security: []
+  - name: Notifications
+    description: Operaciones relacionadas con las Notifications.
+    
+  - name: Users
+    description: Operaciones relacionadas con las Usuarios.
 
-paths:
-  /api/v1/clusters/:
+paths: 
+  /API/sky/evaluations:
+      get:
+        tags:
+          - Evaluations
+        summary: Obtiene evaluaciones de Sky
+        parameters:
+        - name: date_init
+          in: query
+          description: Filtro de fecha inicial en formato yyyy-mm-dd
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2023-04-18"
+        - name: date_finish
+          in: query
+          description: Filtro de fecha de finalización
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Número de resultados a limitar
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          description: Número de resultados para omitir
+          schema:
+            type: integer
+        - name: code
+          in: query
+          description: Filtro de código de usuario
+          schema:
+            type: string
+        responses:
+          '200':
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: integer
+                      example: 1
+                    single:
+                      type: object
+                      properties:
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 6436a6872d10ec000856d305
+                              creation_date:
+                                type: string
+                                format: date-time
+                              status:
+                                type: string
+                                example: 1
+                              user_name:
+                                type: string
+                                example: Santi
+                              user_code:
+                                type: string
+                                example: Santi-test
+                              evaluation_name:
+                                type: string
+                                example: Evaluación Demo
+                              evaluation_id:
+                                type: string
+                                example: 64244deb4f21137b8ce16a23
+                              score:
+                                type: string
+                                example: 100.0
+                              aprobed:
+                                type: boolean
+                                example: true
+                              answers:
+                                type: string
+                                example: ""
+                              course_name:
+                                type: string
+                              course_id:
+                                type: string
+                                example: 64244deb4f21137b8ce16a23
+                        record_count:
+                          type: integer
+                          example: 7  
+
+  /API/sky/notifications:
     get:
-      operationId: ListClusters
-      summary: List available clusters
+      tags:
+        - Notifications
+      summary: Recibe notificaciones de MongoDB
+      parameters:
+        - name: date_init
+          in: query
+          description: Filtro de fecha inicial
+          schema:
+            type: string
+            format: date-time
+        - name: date_finish
+          in: query
+          description: Filtro de fecha de finalización
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Número de resultados a limitar
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          description: Número de resultados para omitir
+          schema:
+            type: integer
+        - name: code
+          in: query
+          description: Filtro de código de usuario
+          schema:
+            type: string
       responses:
-        200:
-          description: OK
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Estado de la respuesta
+                  single:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 6439b0e040950a0008f6454e
+                            notification_title:
+                              type: string
+                            notification_message:
+                              type: string
+                            creation_date:
+                              type: string
+                              format: date-time
+                            status:
+                              type: string
+                              example: 1
+                            user_name:
+                              type: string
+                              example: Dani
+                            user_code:
+                              type: string
+                              example: Dani_test
+                            type_push:
+                              type: string
+                              example: wall
+                      record_count:
+                        type: number
+                        example: 164
+
+  /API/sky/users:
+    get:
+      tags:
+        - Users
+      summary: Obtener datos de usuario de MongoDB
+      parameters:
+        - in: query
+          name: date_init
           schema:
             type: array
             items:
-              $ref: '#/definitions/Cluster'
-      security:
-        - keystone: []
-    post:
-      operationId: CreateCluster
-      summary: Create a cluster
+              type: string
+            example:
+              - "2022-01-01"
+          description: Fecha de inicio para el filtrado de datos de usuario
+        - in: query
+          name: date_finish
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - "2022-12-31"
+          description: Fecha de finalización del filtrado de datos de usuario
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Número máximo de registros a devolver
+        - in: query
+          name: skip
+          schema:
+            type: integer
+            example: 0
+          description: Número de registros a omitir antes de comenzar a devolver registros
+        - in: query
+          name: code
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - "12345"
+          description: Código de usuario para filtrar datos de usuario
       responses:
-        200:
+        '200':
           description: OK
-          schema:
-            $ref: '#/definitions/Cluster'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Cluster'
-      security:
-        - keystone: []
-
-definitions:
-  Cluster:
-    type: object
-    properties:
-      name:
-        description: name of the cluster
-        type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 1
+                  single:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 643b45830cc78100085f39ad
+                            user_name:
+                              type: string
+                              example: ""
+                            user_last_name:
+                              type: string
+                              example: ""
+                            additional:
+                              type: string
+                              example: "[ ]"
+                            user_email:
+                              type: string
+                              example: bbarraganc@sky.com.mx
+                            user_code:
+                              type: string
+                              example: "BBARRAGANC"
+                            creation_date:
+                              type: string
+                              format: date-time
+                            modification_date:
+                              type: string
+                              format: date-time
+                            user_avatar_image:
+                              type: string
+                              example: 2023-04-17T17:09:42.381Z
+                            user_area:
+                              type: string
+                              example: NOVAVISION
+                            user_region:
+                              type: string
+                              example: ""
+                            user_role:
+                              type: string
+                              example: ""
+                            user_last_login_date:
+                              type: string
+                              format: date-time
+                            status:
+                              type: integer
+                              example: 1
+                      record_count:
+                        type: integer
+                        example: 69
+  
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Rotom_Labs_APIs/API_SKY/1.0.0
