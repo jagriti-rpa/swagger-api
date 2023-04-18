@@ -1,13 +1,13 @@
 openapi: 3.0.3
 info:
-  description: API documentation.
+  description: Prolibu API documentation.
   version: 2.3.0
   title: Pet API
 servers:
   - url: https://www.skemify.co:443
     description: Server API
 paths:
-  /employee/:
+  /v1/pet/count/:
     get:
       summary: Returns how many documents exists with an specific query
       tags:
