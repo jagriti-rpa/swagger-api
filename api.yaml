@@ -1,277 +1,55 @@
-openapi: 3.0.3
 info:
-  description: API documentation.
-  version: 2.3.0
-  title: Pet API
-servers:
-  - url: https://www.skemify.co:443
-    description: Server API
+  title: test
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+swagger: '2.0'
+securityDefinitions:
+  keystone:
+    description: OpenStack Keystone Authentication
+    type: apiKey
+    in: header
+    name: x-auth-token
+
+security: []
+
 paths:
-  /employee/:
+  /api/v1/clusters/:
     get:
-      summary: Returns how many documents exists with an specific query
-      tags:
-        - count
-        - Pet
-      operationId: countPet
-      parameters:
-        - name: createdAt
-          in: query
-          schema:
-            type: string
-          description: The date and time the document was created.
-        - name: updatedAt
-          in: query
-          schema:
-            type: string
-          description: The date and time the document was last updated.
-        - name: createdBy
-          in: query
-          schema:
-            type: string
-          description: The user who created the document.
-          required: true
-        - name: updatedBy
-          in: query
-          schema:
-            type: string
-          description: The user who last updated the document.
-          required: true
-        - name: petName
-          in: query
-          schema:
-            type: string
-          description: Pet name
-          required: true
-          example: Shox
-          x-textIndex: true
-          x-displayName: true
-          x-unique: true
-        - name: color
-          in: query
-          schema:
-            type: string
-          description: Pet color
-          example: Red
+      operationId: ListClusters
+      summary: List available clusters
       responses:
-        '200':
+        200:
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  query:
-                    type: object
-                    description: The query send to count
-                  count:
-                    type: integer
-                    description: The number of documents in the Model collection
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-  /v1/pet/search/:
-    get:
-      summary: Search field(s) in 'Pet' object are (petName)
-      tags:
-        - search
-        - Pet
-      operationId: searchPet
-      parameters:
-        - name: term
-          in: query
           schema:
-            type: string
-          description: Search term to match
-          example: Lorem ipsum
-        - name: select
-          in: query
-          schema:
-            type: string
-          description: This parameter specifies the fields to include or exclude from the search results. Pass in a string with the field names separated by spaces. Use "-" for exclusion.
-          example: petName
-        - name: populate
-          in: query
-          schema:
-            type: string
-          description: Pass in a string with the field names to populate, separated by spaces.
-          example: createdBy updatedBy
+            type: array
+            items:
+              $ref: '#/definitions/Cluster'
+      security:
+        - keystone: []
+    post:
+      operationId: CreateCluster
+      summary: Create a cluster
       responses:
-        '200':
+        200:
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  type: object
-                  properties:
-                    timeMs:
-                      type: number
-                      example: 16.32999897003174
-                    pagination:
-                      type: object
-                      description: Pagination information for the returned documents
-                      properties:
-                        count:
-                          type: integer
-                          description: The number of documents returned in this response
-                          example: 5
-                        page:
-                          type: integer
-                          description: The current page number
-                          example: 1
-                        limit:
-                          type: integer
-                          description: The maximum number of documents that can be returned per page
-                          example: 10
-                        lastPage:
-                          type: integer
-                          description: The last page number
-                          example: 1
-                        startIndex:
-                          type: integer
-                          description: The starting index of the documents returned in this response
-                          example: 0
-                    docs:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          petName:
-                            type: string
-                            description: Pet name
-                            required: true
-                            example: Shox
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-  /v1/pet/{id}:
-    get:
-      summary: Returns a single document that matches the given ID.
-      tags:
-        - findOne
-        - Pet
-      operationId: findOnePet
-      parameters:
-        - name: id
-          in: path
           schema:
-            type: string
-          description: '''id'' of the ''Pet'' to retrieve.'
+            $ref: '#/definitions/Cluster'
+      parameters:
+        - name: body
+          in: body
           required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  createdAt:
-                    type: string
-                    description: The date and time the document was created.
-                  updatedAt:
-                    type: string
-                    description: The date and time the document was last updated.
-                  createdBy:
-                    type: string
-                    description: The user who created the document.
-                    required: true
-                  updatedBy:
-                    type: string
-                    description: The user who last updated the document.
-                    required: true
-                  petName:
-                    type: string
-                    description: Pet name
-                    required: true
-                    example: Shox
-                  color:
-                    type: string
-                    description: Pet color
-                    example: Red
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-components:
-  responses:
-    '400':
-      description: Bad Request
-      content:
-        application/json:
           schema:
-            properties:
-              type:
-                type: string
-                example: request_error
-              detail:
-                type: object
-                example:
-                  count:
-                    - A valid integer is required.
-                  order_by:
-                    - value is not a valid choice.
-    '401':
-      description: Authentication error
-      content:
-        application/json:
-          schema:
-            properties:
-              type:
-                type: string
-                example: authentication_error
-              detail:
-                type: string
-                example: Authentication credentials were not provided.
-    '403':
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            properties:
-              type:
-                type: string
-                example: permission_error
-              detail:
-                type: string
-                example: You do not have permission to perform this action.
-    '404':
-      description: Not found
-      content:
-        application/json:
-          schema:
-            properties:
-              type:
-                type: string
-                example: request_error
-              detail:
-                type: string
-                example: Not found
-    '429':
-      description: Too Many Requests
-      content:
-        application/json:
-          schema:
-            properties:
-              type:
-                type: string
-                example: throttled
-              detail:
-                type: string
-                example: Request was throttled.
+            $ref: '#/definitions/Cluster'
+      security:
+        - keystone: []
+
+definitions:
+  Cluster:
+    type: object
+    properties:
+      name:
+        description: name of the cluster
+        type: string
