@@ -1,452 +1,55 @@
-"swagger": "2.0"
 info:
-  title: Person Management
+  title: test
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+swagger: '2.0'
+securityDefinitions:
+  keystone:
+    description: OpenStack Keystone Authentication
+    type: apiKey
+    in: header
+    name: x-auth-token
+
+security: []
+
 paths:
-  /person:
+  /api/v1/clusters/:
     get:
-      summary: Get all persons
-      description: Returns a list of all persons in the system with their associated data.
+      operationId: ListClusters
+      summary: List available clusters
       responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Person'
-
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Cluster'
+      security:
+        - keystone: []
     post:
-      summary: Adds a new person to the system.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PersonInput'
+      operationId: CreateCluster
+      summary: Create a cluster
       responses:
-        '201':
-          description: Successfully created a new person.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Person'
-        '400':
-          description: Invalid input data provided.
-      tags:
-        - Person
-        
-  /person/{socialSecurityNumber}:
-    get:
-      summary: Get a person by their social security number
-      description: Returns the details of a specific person based on their social security number.
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Cluster'
       parameters:
-        - name: socialSecurityNumber
-          in: path
-          description: The social security number of the person to retrieve.
+        - name: body
+          in: body
           required: true
           schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Person'
-        '404':
-          description: Person not found
-  
-    put:
-      summary: Update a person's information by social security number
-      description: Updates an existing person's information based on their social security number
-      parameters:
-        - name: socialSecurityNumber
-          in: path
-          description: The social security number of the person to update
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PersonInput'
-      responses:
-        '200':
-          description: Successfully updated the person's information.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Person'
-        '400':
-          description: Invalid input data provided.
-        '404':
-          description: Person not found.
-      tags:
-        - Person
+            $ref: '#/definitions/Cluster'
+      security:
+        - keystone: []
 
-  /cluster:
-    post:
-      summary: Creates a new cluster
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cluster'
-      responses:
-        201:
-          description: Cluster created successfully
-        400:
-          description: Invalid input
-        409:
-          description: Cluster already exists
-
-  /locations:
-    get:
-      summary: Get all locations
-      description: Returns a list of all locations in the system with their associated data.
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Location' 
-      tags: 
-        - ScheduleX
-
-  /location/{locationid}:
-    get:
-      summary: Get a location by their ID
-      description: Returns the details of a specific location based on their Location ID.
-      parameters:
-        - name: locationid
-          in: path
-          description: The ID of the Location to retrieve.
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Location'
-        '404':
-          description: Location not found
-      tags: 
-        - ScheduleX
-        
-  /createlocation:
-    post:
-      summary: Creates a new location
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-      responses:
-        201:
-          description: Location created successfully
-        400:
-          description: Invalid input
-        409:
-          description: Location already exists
-      tags: 
-        - ScheduleX
-        
-  /lines:
-    get:
-      summary: Get all lines
-      description: Returns a list of all lines in the system with their associated data.
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Line' 
-      tags: 
-        - ScheduleX
-
-  /line/{lineid}:
-    get:
-      summary: Get a line by their ID
-      description: Returns the details of a specific line based on their Location ID.
-      parameters:
-        - name: lineid
-          in: path
-          description: The ID of the Line to retrieve.
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Line'
-        '404':
-          description: Line not found
-      tags: 
-        - ScheduleX
-        
-  /createline:
-    post:
-      summary: Creates a new line
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Line'
-      responses:
-        201:
-          description: Line created successfully
-        400:
-          description: Invalid input
-        409:
-          description: Line already exists
-      tags: 
-        - ScheduleX
-        
-  /appointments:
-    get:
-      summary: Get all appointments
-      description: Returns a list of all appointments in the system with their associated data.
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Appointment' 
-      tags: 
-        - ScheduleX
-
-  /appointment/{appointmentid}:
-    get:
-      summary: Get an appointment by their ID
-      description: Returns the details of a specific location based on their appointment ID.
-      parameters:
-        - name: appointmentid
-          in: path
-          description: The ID of the appointment to retrieve.
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Appointment'
-        '404':
-          description: appointment not found
-      tags: 
-        - ScheduleX
-        
-  /createappointment:
-    post:
-      summary: Creates a new appointment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Appointment'
-      responses:
-        201:
-          description: Location created successfully
-        400:
-          description: Invalid input
-        409:
-          description: Location already exists
-      tags: 
-        - ScheduleX
-  
-
-components:
-  schemas:
-    Person:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        dateOfBirth:
-          type: string
-          format: date
-        socialSecurityNumber:
-          type: integer
-        address:
-          type: string
-        district:
-          type: string
-        contactInformation:
-          type: string
-        infected:
-          type: boolean
-        symptoms:
-          type: boolean
-        quarantinePeriod:
-          type: string
-          format: date
-        clusterId:
-          type: integer
-        testDate:
-          type: string
-          format: date
-        positiveTest:
-          type: boolean
-          
-
-    PersonInput:
-      type: object
-      required:
-        - firstName
-        - lastName
-        - dateOfBirth
-        - socialSecurityNumber
-        - address
-        - district
-        - contactInformation
-        - infected
-        - symptoms
-        - quarantinePeriod
-        - clusterId
-        - testDate
-        - positiveTest
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        dateOfBirth:
-          type: string
-          format: date
-        socialSecurityNumber:
-          type: integer
-        address:
-          type: string
-        district:
-          type: string
-        contactInformation:
-          type: string
-        infected:
-          type: boolean
-        symptoms:
-          type: boolean
-        quarantinePeriod:
-          type: string
-          format: date
-        clusterId:
-          type: integer
-        testDate:
-          type: string
-          format: date
-        positiveTest:
-          type: boolean
-          
-    Cluster:
-      type: object
-      properties:
-        clusterId:
-          type: integer
-        infectedPersons:
-          type: array
-          items:
-            type: integer
-        contactPersons:
-          type: array
-          items:
-            type: integer
-      required:
-        - clusterId
-        - infectedPersons
-        - contactPersons
-        
-    Location:
-      type: object
-      properties:
-        locationID:
-          type: integer
-        lineID:
-          type: integer
-        locationdescription:
-          type: string
-        address:
-          type: string
-        appointmenduration:
-          type: integer
-      required:
-        - locationID
-    
-    Line:
-      type: object
-      properties:
-        lineID:
-          type: integer
-        appointmentID:
-          type: integer
-        vaccine:
-          type: string
-      required:
-        - lineID
-        
-    Appointment:
-      type: object
-      properties:
-        appointmentID:
-          type: integer
-        appointmentdate:
-          type: integer
-        booked:
-          type: boolean
-        appointmentseries:
-          type: integer
-      required:
-        - appointmenID
-        
-    Appointmentserie:
-      type: object
-      properties:
-        appointmentserieID:
-          type: integer
-        stertime:
-          type: integer
-        endtime:
-          type: integer
-        repetitive:
-          type: integer
-      required:
-        - appointmenserieID
-
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/K11803772_1/Corona/1
-
-tags:
-  - name: ScheduleX
-  - name: RegiX
-  - name: MedX
+definitions:
+  Cluster:
+    type: object
+    properties:
+      name:
+        description: name of the cluster
+        type: string
