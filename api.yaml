@@ -1,2146 +1,700 @@
-openapi: 3.0.0
+swagger: "2.0"
 info:
-  description: |
-    Resource Planner API documentation.
-  version: "1.0.0"
-  title: Resource Planner
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/Akhileshpm/Resource_planner/1.0.0
+  description: "This is a sample server Petstore server.  You can find out more about Swagger at <a href=\"http://swagger.io\">http://swagger.io</a> or on irc.freenode.net, #swagger.  For this sample, you can use the api key \"special-key\" to test the authorization filters"
+  version: 1.0.0
+  title: Swagger Petstore YAML
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: /v2
 tags:
-  - name: project
-    description: project details
-  - name: stream
-    description: streams of resources
-  - name: resource
-    description: Available resources to company
-  - name: dashboard
-    description: summary of resources
+  - name: pet
+    description: Everything about your Pets
+    externalDocs:
+      description: Find out more
+      url: "http://swagger.io"
+  - name: store
+    description: Operations about user
+  - name: user
+    description: Access to Petstore orders
+    externalDocs:
+      description: Find out more about our store
+      url: "http://swagger.io"
+schemes:
+  - http
 paths:
-  /streams:  
+  /pet:
     post:
       tags:
-      - stream
-      summary: Add new stream
-      description: Add a new stream
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-              required: 
-               - name
-        description: Created stream object
-        required: true
-    get:
-      tags:
-      - stream
-      summary: get all streams
-      description: lists the name and uuid of all streams
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        uuid:
-                          type: string
-                        _id:
-                          type: string
-                  totalCount:
-                    type: number
-  /streams/{streamId}:
-    get:
-      tags:
-        - stream
-      summary: Find stream by ID
-      operationId: getstreamById
+        - pet
+      summary: Add a new pet to the store
+      x-swagger-router-controller: SampleController
+      description: ""
+      operationId: addPet
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
       parameters:
-        - name: streamId
-          in: path
-          description: ID of stream that needs to be fetched
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: isApproved
-          in: query
-          description: filter result based on approval of a resource ina  specific skill
-          schema:
-            type: string
-            enum: ['true', 'false']  
-        - name: search
-          in: query
-          description: filter result based onr resources name in supportingLeads and team members.
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  stream:
-                    type: object
-                    properties:
-                      _id:
-                        type: string
-                      name:
-                        type: string
-                      uuid:
-                        type: string
-                      lead:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            resource:
-                              type: object
-                              properties:
-                                _id:
-                                  type: string
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                            isApproved:
-                              type: boolean
-                            approvedBy:
-                              type: string
-                            approvedAt:
-                              type: string
-                              format: date
-                            notes:
-                              type: array
-                              items:
-                                  type: string
-                                  description: notes given by the leads
-                      supportingLeads:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            resource:
-                              type: object
-                              properties:
-                                _id:
-                                  type: string
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                            isApproved:
-                              type: boolean
-                            approvedBy:
-                              type: string
-                            approvedAt:
-                              type: string
-                              format: date
-                            notes:
-                              type: array
-                              items:
-                                  type: string
-                                  description: notes given by the leads                       
-                    required:
-                      - _id
-                      - name
-                      - uuid
-                      - lead
-                      - supportingLeads
-                  teamMembers:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        isApproved:
-                          type: boolean
-                        _id:
-                          type: string
-                        stream:
-                          type: string
-                        resource:
-                          type: object
-                          properties:
-                            _id:
-                              type: string
-                            name:
-                              type: string
-                            email:
-                              type: string
-                        approvedBy:
-                          type: string
-                        uuid:
-                          type: string
-                          format: uuid
-                      required:
-                        - isApproved
-                        - _id
-                        - stream
-                        - resource
-                        - approved
-                        - uuid
-                    required:
-                      - isApproved
-                      - _id
-                      - stream
-                      - resource
-                      - approved
-                      - uuid
-                  result:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      uuid:
-                        type: string
-                        format: uuid
-                      leadCount:
-                        type: integer
-                        format: int32
-                      supportingLeadsCount:
-                        type: integer
-                        format: int32
-                        description: total count, count doesn't change
-                      teamMembersCount:
-                        type: integer
-                        format: int32
-                        description: count changes when search is applied
-                      totalCount:
-                        type: integer
-                        format: int32
-                      supportingLeadsPagination:
-                        type: integer
-                        description: count changes when search is applied
-                      teamPagination:
-                        type: integer
-                        description: count changes when search is applied
-                    required:
-                      - name
-                      - uuid
-                      - leadCount
-                      - supportingLeadsCount
-                      - teamMembersCount
-                      - totalCount
-                required:
-                  - stream
-                  - teamMembers
-                  - result
-    delete:
-      tags:
-        - stream
-      summary: Delete stream
-      operationId: deletestream
-      parameters:
-        - name: streamId
-          in: path
-          description: UUID of the stream to be deleted.
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid UUID supplied
-        '404':
-          description: operation failed         
-    put:
-      tags:
-      - stream
-      summary: Update stream by ID
-      operationId: updatestreamById
-      parameters:
-        - name: streamId
-          in: path
-          description: UUID of stream that needs to be fetched
-          required: true
-          schema:
-            type: string
-            format: uuid           
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-              required: 
-               - name            
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: Name of the Resource.
-                  email:
-                    type: string
-                    description: Email of the Resource.
-                  role:
-                    type: string
-                    description: role of the Resource in a skill.                    
-                  isApproved:
-                    type: boolean
-                    description: Employee is approved/Not approved in the specific stream.
-                  approvedBy:
-                    type: string
-                    description: Email id of the employee who approved the resource in a specific.
-                  status:
-                    type: string
-                    description: status defines if a resource is modified by his role/approved or he is removed from certain stream.
-                    enum: ['modified','deleted']
-                    
-        '400':
-          description: Bad request
-        '404':
-          description: stream not found
-  /streams/notes:
-    get:
-      tags:
-        - stream
-      summary: Retrieve the notes provided by a lead for a resource within a stream.
-      operationId: getNotesInStreams
-      parameters:
-        - name: streamId
-          in: query
-          description: _id of the stream.
+        - in: body
+          name: body
+          description: Pet object that needs to be added to the store
           required: false
           schema:
-            type: string
-        - name: resourceEmailId
-          in: query
-          description: _id of the resource
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-        - name: isOwner
-          in: query
-          description: parameter to get the notes created by the user logged in.
-          schema:
-            type: boolean
+            $ref: "#/definitions/Pet"
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        _id:
-                          type: string
-                          description: objectId of the stream.
-                        uuid:
-                          type: string
-                          description: The unique identifier of the item.
-                        stream:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              description: The name of the stream associated with the item.
-                        note:
-                          type: string
-                          description: A note or comment associated with the item.
-                        createdBy:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              description: The name of the user who last updated the item.
-                            email:
-                              type: string
-                              description: The email address of the user who last updated the item.
-                        createdAt:
-                          type: string
-                          format: date-time
-                          description: The date and time when the item was last updated.
-                  totalCount: 
-                    type: string
-                    description: The number of notes returned in the response.
-        '500':
-          description: 'operation failed'
-    post:
-      tags:
-        - stream    
-      summary: Create a new note
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                resource:
-                  type: string
-                  description: The _id of the resource this note is associated with.
-                stream:
-                  type: string
-                  description: The _id of the stream this note belongs to.
-                isPrivate:
-                  type: boolean
-                  description: Whether this note should be private or not.
-                note:
-                  type: string
-                  description: The content of the note.
-                createdBy:
-                  type: string
-                  description: The _id of the author of the note.
-              required:
-                - resource
-                - stream
-                - note
-                - createdBy
-      responses:
-        '200':
-          description: Note added successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: A success message.
-              example:
-                message: Note added successfully
-  /streams/notes/{noteId}:
+        "405":
+          description: Invalid input
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
     put:
       tags:
-        - stream
-      summary: Update a note by UUID
+        - pet
+      summary: Update an existing pet
+      description: ""
+      operationId: updatePet
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
       parameters:
-        - name: noteId
-          in: path
-          description: The UUID of the note to update.
-          required: true
+        - in: body
+          name: body
+          description: Pet object that needs to be added to the store
+          required: false
           schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                stream:
-                  type: string
-                  description: The _id of the stream this note belongs to.
-                isPrivate:
-                  type: boolean
-                  description: Whether this note should be private or not.
-                note:
-                  type: string
-                  description: The updated content of the note.
-              anyOf:
-                - required:
-                  - stream
-                  - isPrivate
-                - required:
-                  - note
+            $ref: "#/definitions/Pet"
       responses:
-        '200':
-          description: Note updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  uuid:
-                    type: string
-                    format: uuid
-                    description: The UUID of the updated note.
-                  note:
-                    type: string
-                    description: The content of the updated note.
-              example:
-                uuid: 2933380a-c338-41c2-844d-4374c84c7b9c
-                note: Test update created at
-        '404':
-          description: Note not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: An error message.
-              example:
-                message: Note not found
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Pet not found
+        "405":
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+  /pet/findByStatus:
+    get:
+      tags:
+        - pet
+      summary: Finds Pets by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findPetsByStatus
+      consumes:
+        - application/xml
+        - application/json
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          default: available
+          enum:
+            - available
+            - pending
+            - sold
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Pet"
+        "400":
+          description: Invalid status value
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+  /pet/findByTags:
+    get:
+      tags:
+        - pet
+      summary: Finds Pets by tags
+      description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+      operationId: findPetsByTags
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: tags
+          in: query
+          description: Tags to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Pet"
+        "400":
+          description: Invalid tag value
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+  "/pet/{petId}":
+    get:
+      tags:
+        - pet
+      summary: Find pet by ID
+      description: Returns a single pet
+      operationId: getPetById
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Pet"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Pet not found
+      security:
+        - api_key: []
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+    post:
+      tags:
+        - pet
+      summary: Updates a pet in the store with form data
+      description: ""
+      operationId: updatePetWithForm
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet that needs to be updated
+          required: true
+          type: string
+        - name: name
+          in: formData
+          description: Updated name of the pet
+          required: false
+          type: string
+        - name: status
+          in: formData
+          description: Updated status of the pet
+          required: false
+          type: string
+      responses:
+        "405":
+          description: Invalid input
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
     delete:
       tags:
-        - stream
-      summary: Delete a note by UUID
+        - pet
+      summary: Deletes a pet
+      description: ""
+      operationId: deletePet
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      produces:
+        - application/xml
+        - application/json
       parameters:
-        - name: noteId
+        - name: api_key
+          in: header
+          description: ""
+          required: false
+          type: string
+        - name: petId
           in: path
-          description: The UUID of the note to delete.
+          description: Pet id to delete
           required: true
-          schema:
-            type: string
-            format: uuid
+          type: integer
+          format: int64
       responses:
-        '200':
-          description: Note deleted successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: A success message.
-              example:
-                message: Note deleted successfully
-        '404':
-          description: Note not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: An error message.
-              example:
-                message: Note not found    
-  /streams/resources:
-    put:
-      tags:
-      - stream
-      summary: Update the resources list in streams
-      operationId: UpdateResourcesInStream
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                add:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      role:
-                        type: string
-                        enum: ['lead', 'supportingLeads', 'team']
-                      resourceId:
-                        type: string
-                        description: objectId of the resource
-                      streamId:
-                        type: string
-                        description: objectId of the stream
-                      isApproved:
-                        type: boolean
-                        enum: [true, false]
-                      approvedBy:
-                        type: string
-                      approvedAt:
-                        type: string
-                        format: date
-                      notes:
-                        type: string
-                        description: notes given by the leads
-                      visibility: 
-                        type: string
-                        enum: ['private', 'public']                        
-                    required:
-                      - roleId
-                      - resourceId
-                      - streamId
-                delete:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      resourceId:
-                        type: string
-                      streamId:
-                        type: string
-                    required:
-                      - roleId
-                      - resourceId
-                update:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        role:
-                          type: string
-                          enum: ['lead', 'supportingLeads', 'team']
-                        resourceId:
-                          type: string
-                          description: objectId of the resource
-                        streamId:
-                          type: string
-                          description: objectId of the stream
-                        isApproved:
-                          type: boolean
-                          enum: [true, false]
-                        approvedBy:
-                          type: string
-                        # approvedAt:
-                        #   type: string
-                        #   format: date
-                        # notes:
-                        #   type: string
-                        #   description: notes given by the leads
-                        # visibility: 
-                        #   type: string
-                        #   enum: ['private', 'public']
-                note:  
-                  type: object
-                  properties:
-                    resource:
-                      type: string
-                      description: The _id of the resource this note is associated with.
-                    stream:
-                      type: string
-                      description: The _id of the stream this note belongs to.
-                    isPrivate:
-                      type: boolean
-                      description: Whether this note should be private or not.
-                    note:
-                      type: string
-                      description: The content of the note.
-                    createdBy:
-                      type: string
-                      description: The _id of the author of the note.
-              required:
-                - updates
-        description: Created stream object
-        required: true      
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Bad request
-        '404':
-          description: stream not found   
-  /resources/create:
+        "400":
+          description: Invalid pet value
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+  "/pet/{petId}/uploadImage":
     post:
       tags:
-        - resource
-      summary: Create resource
-      description: This can only be done by the logged in user.
-      operationId: createResource
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Name of the employee.
-                streams:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      streamId: 
-                        type: string
-                        description: objectId of the stream
-                      role:
-                        type: string
-                        description: name of the title
-                        enum: [lead, supportingLeads, teams]
-                      isApproved:
-                        type: boolean
-                        description: approved and not approved are the possible values
-                        enum: [true, false]
-                      approvedBy:
-                        type: string
-                        description: email id of the user who approved the employee in a certain stream
-                email:
-                  type: string
-                  description: email id of the employee.
-                employeeId:
-                  type: string
-                  description: Employee id of the employee assigned by the organization.
-                grade:
-                  type: string
-                  description: Grade of the employee.
-                location:
-                  type: string
-                  description: Employee's work location.
-                virtualTeam:
-                  type: string
-                  description: Virtual team of the employee in the organization.
-                projects:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                     projectId:
-                      type: string
-                      description: objectId of the project
-                     roleId:
-                      type: string
-                      description: objectId of the role
-                joinedAt: 
-                  type: string
-                  format: date
-                  description: Joined date of the employee.
-              required: 
-               - name
-               - email
-               - employeeId
-               - grade
-               - location
-               - virtualTeam
-               - joinedAt
-        description: Created resource object
-  /resources/unallocated:
-    get:
-      tags:
-        - resource
-      summary: Finds unallocated resources
-      description: returns resources with zero projects
+        - pet
+      summary: uploads an image
+      x-swagger-router-controller: SampleController
+      description: ""
+      operationId: uploadFile
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
       parameters:
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A streams filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Resource'
-                  totalCount:
-                    type: integer
-                    format: int32
-  /resources/locations:
-    get:
-      tags:
-        - resource
-      summary: Finds resources by location.
-      parameters:
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A streams filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-        - name: location
-          in: query
-          description: name of the location
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - type: object
-                    properties:
-                      result:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Resource'
-                      totalCount:
-                        type: integer
-                        format: int32
-                  - type: object
-                    properties:
-                      locations:
-                        type: array
-                        items:
-                          type: string
-                        description: list of locations
-  /resources/{resourceId}:
-    get:
-      tags:
-        - resource
-      summary: Finds unallocated resources
-      description: returns resources with zero projects
-      parameters:
-        - name: resourceId
+        - name: petId
           in: path
+          description: ID of pet to update
           required: true
-          description: UUID of the resource
-          schema:
-            type: string
-            format: uuid
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-        - name: fields
-          in: query
-          description: required fields to be shown must be passed as comma separated. (Example - fields=streams,projects,notes,isOwner)
-          schema:
-            type: string
+          type: integer
+          format: int64
+        - name: additionalMetadata
+          in: formData
+          description: Additional data to pass to server
+          required: false
+          type: string
+        - name: file
+          in: formData
+          description: file to upload
+          required: false
+          type: file
       responses:
-        '200':
+        "200":
           description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      _id:
-                        type: string
-                        description: Resource id.
-                      name:
-                        type: string
-                        description: Name of the employee.
-                      spaceStream: 
-                        type: string
-                        description: Stream of a resource mentioned in Space.
-                      streams:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            name: 
-                              type: string
-                              description: name of the stream
-                            role: 
-                              type: string
-                              enum: ['lead', 'supportingLeads', 'team']
-                            isApproved: 
-                              type: boolean
-                              enum: [true, false]
-                            approvedAt:
-                              type: string
-                      email:
-                        type: string
-                        description: email id of the employee.
-                      employeeId:
-                        type: string
-                        description: Employee id of the employee assigned by the organization.
-                      grade:
-                        type: string
-                        description: Grade of the employee.
-                      location:
-                        type: string
-                        description: Employee's work location.
-                      virtualTeam:
-                        type: string
-                        description: Virtual team of the employee in the organization.
-                      subVT:
-                        type: string
-                        description: A sub virtual team to group resources under a virtual team.
-                      projects:
-                        type: array
-                        items:
-                          type: object
-                          properties: 
-                            name: 
-                              type: string
-                              description: Title of the project.
-                            allocation:
-                              type: string
-                              description: percentage of allocation of this employee in this project.
-                      notes:
-                        type: object
-                        properties:
-                          general:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                _id:
-                                  type: string
-                                stream: 
-                                  type: object
-                                  properties:
-                                    name: 
-                                      type: string
-                                note: 
-                                  type: string
-                                createdBy: 
-                                  type: string
-                                createdAt: 
-                                  type: string
-                                updatedAt: 
-                                  type: string
-                                uuid: 
-                                  type: string
-                          otherSkill:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                _id:
-                                  type: string
-                                stream: 
-                                  type: object
-                                  properties:
-                                    name: 
-                                      type: string
-                                    _id:
-                                      type: string
-                                note: 
-                                  type: string
-                                createdBy: 
-                                  type: string
-                                createdAt: 
-                                  type: string
-                                updatedAt: 
-                                  type: string
-                                uuid: 
-                                  type: string                                  
-                      joinedAt: 
-                        type: string
-                        format: date
-                        description: Joined date of the employee.
-                      status:
-                        type: string
-                        enum: ['Active', 'Relieved']                 
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+  /store/inventory:
+    get:
+      tags:
+        - store
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      operationId: getInventory
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            additionalProperties:
+              type: integer
+              format: int32
+      security:
+        - api_key: []
+  /store/order:
+    post:
+      tags:
+        - store
+      summary: Place an order for a pet
+      description: ""
+      operationId: placeOrder
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: order placed for purchasing the pet
+          required: false
+          schema:
+            $ref: "#/definitions/Order"
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Order"
+        "400":
+          description: Invalid Order
+  "/store/order/{orderId}":
+    get:
+      tags:
+        - store
+      summary: Find purchase order by ID
+      description: "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions"
+      operationId: getOrderById
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of pet that needs to be fetched
+          required: true
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Order"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
     delete:
       tags:
-        - resource
-      summary: Delete resource
-      operationId: deleteResource
+        - store
+      summary: Delete purchase order by ID
+      description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+      operationId: deleteOrder
+      produces:
+        - application/xml
+        - application/json
       parameters:
-        - name: resourceId
+        - name: orderId
           in: path
-          description: UUID of the resource to be deleted.
+          description: ID of the order that needs to be deleted
           required: true
-          schema:
-            type: string
+          type: string
       responses:
-        '500':
-          description: 'error details'                        
-  /resources/internal:
-    get:
-      tags:
-        - resource
-      summary: Finds resources allocated to internal projects
-      description: returns resources allocaetd with internal projects
-      parameters:
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A streams filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Resource'
-                  totalCount:
-                    type: integer
-                    format: int32
-  /resources/notice-period:
-    get:
-      tags:
-        - resource
-      summary: Finds resources who resigned from the organization.
-      description: returns resources with zero projects
-      parameters:
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A streams filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Resource'
-                  totalCount:
-                    type: integer
-                    format: int32
-        '500':
-          description: 'operation failed'
-  /resources/virtual-team/{virtualTeam}:
-    get:
-      tags:
-        - resource
-      summary: Finds resources allocated to internal projects
-      description: returns resources allocaetd with internal projects
-      parameters:
-        - name: virtualTeam
-          in: path
-          required: true
-          description: list resources by virtualTeam
-          schema:
-            type: string
-        - name: subVT
-          in: query
-          required: true
-          description: list resources by subVT
-          schema:
-            type: string
-        - name: page
-          in: query
-          required: true
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: A filter to apply to the results, value must be the objectId of the streams.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Resource'
-                  totalCount:
-                    type: integer
-                    format: int32
-  /resources:
-    get:
-      tags:
-        - resource
-      summary: Finds all resources
-      description: returns paginated resources if page number and limit is specified in the query else all the resources are returned.
-      parameters:
-        - name: page
-          in: query
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-        - name: search
-          in: query
-          description: A search term to filter results by resource names
-          schema:
-            type: string
-        - name: streams
-          in: query
-          description: A filter to apply to the results, no significance for the value
-          schema:
-            type: string
-            enum: ['true']
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        email:
-                          type: string
-                        _id:
-                          type: string
-                  totalCount:
-                    type: number
-    put:
-      tags:
-        - resource
-      summary: Update the status of a list of resources.
-      description: Update resources status.
-      operationId: updateResourceStatus
-      requestBody:
-        description: Update an existent resource.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                active:
-                  type: array
-                  items:
-                    type: string
-                    description: ObjectId of the resources.
-                noticePeriod:
-                  type: array
-                  items:
-                    type: string
-                    description: ObjectId of the resources. 
-                subVT:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      subVT: 
-                        type: string
-                        description: name of the subVT
-                      resourceId:
-                        type: string
-                        description: objectId of the resources
-                      
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: Name of the employee.
-                  streams:
-                    type: array
-                    items:
-                      type: string
-                  email:
-                    type: string
-                    description: email id of the employee.
-                  employeeId:
-                    type: string
-                    description: Employee id of the employee assigned by the organization.
-                  grade:
-                    type: string
-                    description: Grade of the employee.
-                  location:
-                    type: string
-                    description: Employee's work location.
-                  virtualTeam:
-                    type: string
-                    description: Virtual team of the employee in the organization.
-                  subVT:
-                    type: string
-                    description: A sub virtual team to group resources under a virtual team.
-                  projects:
-                    type: array
-                    items:
-                      type: string
-                      format: objectid
-                      description: ObjectId of the projects of the employee.
-                  joinedAt: 
-                    type: string
-                    format: date
-                    description: Joined date of the employee.
-                  status:
-                    type: string
-                    enum: ['Active', 'Relieved', 'Notice period']
-  /resources/allocated:
-    get:
-      tags:
-        - resource
-      summary: Finds resources allocated to internal projects
-      description: Finds resources allocated to internal projects
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Resource'
-
-  /projects:
-    post:
-      tags:
-        - project
-      summary: Add a new project
-      responses:
-        default:
-          description: new project added
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name: 
-                  type: string
-                client:
-                  type: string
-              required: 
-               - name
-               - client
-        description: Created project object
-        required: true
-    get:
-      tags:
-      - project
-      summary: list all projects
-      responses:
-        '200':
-          description: list of all the projects is returned
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        uuid:
-                          type: string
-                        _id:
-                          type: string
-                  totalCount:
-                    type: number
-  /projects/{projectId}:  
-    get:
-      tags:
-        - project
-      summary: Find project by ID
-      operationId: getProjectById
-      parameters:
-        - name: projectId
-          in: path
-          description: UUID of project that needs to be fetched
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: page
-          in: query
-          description: The page number of results to retrieve
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          description: The maximum number of results to retrieve per page
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 20            
-      responses: {
-          "200": {
-              "description": "OK",
-              "content": {
-                "application/json": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "_id": {
-                                "type": "string"
-                            },
-                            "projectName": {
-                                "type": "string"
-                            },
-                            "client": {
-                                "type": "string"
-                            },
-                            "uuid": {
-                                "type": "string"
-                            },
-                            "managers": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "resource": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "streams": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "spaceStream": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "format": "email"
-                                                }
-                                            }
-                                        },
-                                        "allocation": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            },
-                            "nonManagers": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "resource": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "streams": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "spaceStream": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "format": "email"
-                                                }
-                                            }
-                                        },
-                                        "role": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        },
-                                        "allocation": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            },
-                            "totalCount": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-              }
-          }
-      }
-
-    put:
-      tags:
-        - project
-      summary: Update an existing project
-      description: Update an existing project by Id
-      operationId: updateProjectById
-      parameters:
-        - name: projectId
-          in: path
-          description: UUID of project that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name: 
-                  type: string
-                client:
-                  type: string
-              required: 
-               - name
-               - client
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Project'
-        '404':
-          description: Project not found   
-        '400':
-          description: Bad request
-          
-    delete:
-      tags:
-        - project
-      summary: Delete project
-      operationId: deleteProject
-      parameters:
-        - name: projectId
-          in: path
-          description: UUID of the project to be deleted.
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid UUID supplied
-        '404':
-          description: Project not found
-  /projects/resources:
-    put:
-      tags:
-      - project
-      summary: Update the resources list in projects
-      operationId: addResourcesToProject
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                add:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      roleId:
-                        type: string
-                        description: objectId of the role.
-                      resourceId:
-                        type: string
-                      projectId:
-                        type: string
-                    required:
-                      - roleId
-                      - resourceId
-                      - projectId
-                delete:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      resourceId:
-                        type: string
-                      projectId:
-                        type: string
-                    required:
-                      - projectId
-                      - resourceId
-              required:
-                - updates
-        description: Created stream object
-        required: true      
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Bad request
-        '404':
-          description: stream not found            
-  /summary/:
-    get:
-      tags:
-      - dashboard
-      summary: list a summary of resources and the streams available.
-      responses:
-        '200':
-          description: An object containing the required details for the home page.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  grades:
-                    type: object
-                    properties:
-                      grade1:
-                        type: object
-                        properties:
-                          stream1:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                          stream2:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                      grade2:
-                        type: object
-                        properties:
-                          stream1:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                          stream2:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                  streams:
-                    type: object
-                    properties:
-                      stream1:
-                        type: object
-                        properties:
-                          virtualTeam1:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                          virtualTeam2:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                      stream2:
-                        type: object
-                        properties:
-                          virtualTeam1:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-                          virtualTeam2:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                email:
-                                  type: string
-  /get-sample:
-    get:
-      summary: Generates a sample CSV file for the bulk data.
-      description: Generates a sample CSV file of the bulk data and sends it as an attachment
-      responses:
-        200:
-          description: A sample csv file
-          content:
-            application/csv:
-              schema:
-                type: string
-                format: binary
-        500:
-          description: An error occurred while generating the sample file
-      tags:
-        - Sample File
-  /uploads:
-    post:
-      tags:
-        - "bulkUpload"
-      summary: "Upload a CSV file to the server and process it"
-      description: "This endpoint allows users to upload a CSV file to the server, process it, and store the data in MongoDB collections."
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                csvFile:
-                  type: string
-                  format: binary
-              required:
-                - csvFile
-      responses:
-        200:
-          description: "Returns the updates that were made to the MongoDB collections."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  updates:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        oldData:
-                          type: object
-                          properties:
-                            uuid:
-                              type: string
-                            name:
-                              type: string
-                            streams:
-                              type: array
-                              items:
-                                type: string
-                            employeeId:
-                              type: string
-                            email:
-                              type: string
-                            grade:
-                              type: string
-                            location:
-                              type: string
-                            projects:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  role:
-                                    type: string
-                                  _id:
-                                    type: string
-                                  client:
-                                    type: string
-                                    nullable: true
-                            virtualTeam:
-                              type: string
-                            joinedAt:
-                              type: string
-                            _id:
-                              type: string
-                            createdAt:
-                              type: string
-                            updatedAt:
-                              type: string
-                        newData:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                            streams:
-                              type: array
-                              items:
-                                type: string
-                            employeeId:
-                              type: string
-                            email:
-                              type: string
-                            grade:
-                              type: string
-                            location:
-                              type: string
-                            projects:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  role:
-                                    type: string
-                                  _id:
-                                    type: string
-                                  client:
-                                    type: string
-                                    nullable: true
-                            virtualTeam:
-                              type: string
-                            joinedAt:
-                              type: string
-                            _id:
-                              type: string
-                            uuid:
-                              type: string
-                        changes:
-                          type: object
-                          properties:
-                            projects:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  oldRole:
-                                    type: string
-                                  newRole:
-                                    type: string
-                                  status:
-                                    type: string
-                                  _id:
-                                    type: string
-                                  client:
-                                    type: string
-                                    nullable: true
-                            _id:
-                              type: string
-                            streams:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  status:
-                                    type: string
-                                  _id:
-                                    type: string
-                            location:
-                              type: object
-                              properties:
-                                existing:
-                                  type: string
-                                update:
-                                  type: string
-                            grade:
-                              type: object
-                              properties:
-                                existing:
-                                  type: string
-                                update:
-                                  type: string
-                            virtualTeam:
-                              type: object
-                              properties:
-                                existing:
-                                  type: string
-                                update:
-                                  type: string                                  
-                        _id:
-                          type: string
-                        uuid:
-                          type: string
-        500:
-          description: "operation failed"                             
-    put:
-      tags:
-        - "bulkUpload"
-      summary: "An endpoint to apply the approved changes"
-      description: "The user shall pass the uuids of the updates that are approved"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                uuid:
-                  type: string
-                  format: uuid
-                updates:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                    description: individual resources 
-      responses:
-        '200':
-          description: "OK"
-        '500':
-          description: "Internal server error"
-                                            
-  /roles:
-    get:
-        tags:
-        - role
-        summary: list of roles.
-        responses:
-          '200':
-            description: An object containing the required details for the home page.
-            content:
-              application/json:
-                schema:    
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          _id:
-                            type: string
-                    totalCount:
-                      type: number
-  /users/:
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
+  /user:
     post:
       tags:
         - user
-      summary: Create resource
-      description: Provide a user with login permission.
+      summary: Create user
+      description: This can only be done by the logged in user.
       operationId: createUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: Email of the employee.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: false
+          schema:
+            $ref: "#/definitions/User"
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                  uuid:
-                    type: string
+        default:
           description: successful operation
-components:
-  schemas:
-    Project:
-      type: object
-      properties:
-        uuid:
+  /user/createWithArray:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: ""
+      operationId: createUsersWithArrayInput
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+      responses:
+        default:
+          description: successful operation
+  /user/createWithList:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: ""
+      operationId: createUsersWithListInput
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+      responses:
+        default:
+          description: successful operation
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ""
+      operationId: loginUser
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
           type: string
-          format: uuid
-          description: Unique assigned to each project document.
-        name:
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
           type: string
-          description: Title of the project.
-        resources:
-          type: array
-          description: List of the employees excluding managers in the project.
-          items:
-            type: object
-            properties:
-              uuid:
-                type: string
-                format: uuid
-              name: 
-                type: string
-              email:
-                type: string
-        managers:
-          type: array
-          description: List of the managers in the project.
-          items:
-            type: object
-            properties:
-              uuid:
-                type: string
-                format: uuid
-              name: 
-                type: string
-      xml:
-        name: Project
-    Resource:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the employee.
-        spaceStream:
-          type: object
-          properties:
-            name:
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: string
+          headers:
+            X-Rate-Limit:
+              type: integer
+              format: int32
+              description: calls per hour allowed by the user
+            X-Expires-After:
               type: string
-              description: Stream of a resource in Space.
-        streams:
-          type: array
-          items:
-            type: string
-        email:
+              format: date-time
+              description: date in UTC when toekn expires
+        "400":
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ""
+      operationId: logoutUser
+      produces:
+        - application/xml
+        - application/json
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  "/user/{username}":
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ""
+      operationId: getUserByName
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: "The name that needs to be fetched. Use user1 for testing. "
+          required: true
           type: string
-          description: email id of the employee.
-        employeeId:
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+    put:
+      tags:
+        - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
           type: string
-          description: Employee id of the employee assigned by the organization.
-        grade:
+        - in: body
+          name: body
+          description: Updated user object
+          required: false
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "400":
+          description: Invalid user supplied
+        "404":
+          description: User not found
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
           type: string
-          description: Grade of the employee.
-        location:
+      responses:
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+securityDefinitions:
+  petstore_auth:
+    type: oauth2
+    authorizationUrl: "http://petstore.swagger.io/api/oauth/dialog"
+    flow: implicit
+    scopes:
+      "write:pets": modify pets in your account
+      "read:pets": read your pets
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  Order:
+    properties:
+      id:
+        type: integer
+        format: int64
+      petId:
+        type: integer
+        format: int64
+      quantity:
+        type: integer
+        format: int32
+      shipDate:
+        type: string
+        format: date-time
+      status:
+        type: string
+        description: Order Status
+        enum:
+          - placed
+          - approved
+          - delivered
+      complete:
+        type: boolean
+    xml:
+      name: Order
+  Category:
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+    xml:
+      name: Category
+  User:
+    properties:
+      id:
+        type: integer
+        format: int64
+      username:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      userStatus:
+        type: integer
+        format: int32
+        description: User Status
+    xml:
+      name: User
+  Tag:
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+    xml:
+      name: Tag
+  Pet:
+    required:
+      - name
+      - photoUrls
+    properties:
+      id:
+        type: integer
+        format: int64
+      category:
+        $ref: "#/definitions/Category"
+      name:
+        type: string
+        example: doggie
+      photoUrls:
+        type: array
+        xml:
+          name: photoUrl
+          wrapped: true
+        items:
           type: string
-          description: Employee's work location.
-        virtualTeam:
-          type: string
-          description: Virtual team of the employee in the organization.
-        subVT:
-          type: string
-          description: A sub virtual team to group resources under a virtual team.
-        projects:
-          type: array
-          items:
-            type: string
-            format: objectid
-            description: ObjectId of the projects of the employee.
-        joinedAt: 
-          type: string
-          format: date
-          description: Joined date of the employee.
-        status:
-          type: string
-          enum: ['Active', 'Relieved']
-      required: 
-       - name
-       - email
-       - employeeId
-       - grade
-       - location
-       - virtualTeam
-       - joinedAt
-      xml:
-        name: Resource
-    stream:
-      type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-        name:
-          type: string
-          description: Name of the technology.
-        lead:
-          type: array
-          description: Employee who has lead role titles and are streamed in this respective technology.
-          items:
-            type: object
-            properties:
-              _id:
-                type: string
-                format: objectId
-              uuid: 
-                type: string
-                format: uuid
-              name: 
-                type: string
-              email:
-                type: string
-        supportingLeads:
-          type: array
-          description: Employees who are streamed in this respective technology and not having a lead role in the company.
-          items:
-            type: object
-            properties:
-              _id:
-                type: string
-                format: objectId
-              uuid: 
-                type: string
-                format: uuid
-              name: 
-                type: string
-              email:
-                type: string                
-      xml:
-        name: stream
+      tags:
+        type: array
+        xml:
+          name: tag
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      status:
+        type: string
+        description: pet status in the store
+        enum:
+          - available
+          - pending
+          - sold
+    xml:
+      name: Pet
+  ApiResponse:
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+    xml:
+      name: "##default"
+externalDocs:
+  description: Find out more about Swagger
+  url: "http://swagger.io"
